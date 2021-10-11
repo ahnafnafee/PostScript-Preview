@@ -100,7 +100,6 @@ function getWebviewContent(fileName: any, svgContent: any) {
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <!-- One of the following themes -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css" /> <!-- 'nano' theme -->
 
@@ -110,53 +109,59 @@ function getWebviewContent(fileName: any, svgContent: any) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.5.0/dist/svg-pan-zoom.min.js"></script>
-
   <style>
     body {
-      margin: 0;
-      padding: 20px 0 0 20px;
+      margin-top: 2%;
+      padding: 2% 0%;
     }
 
-    div.sticky {
+    h2 {
+      font-size: 1.2em;
+      margin-left: 10%;
+      border: 1px solid black;
+      width: max-content;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 2%;
+    }
+
+    .main-main-container {
+      margin: 3% 2% !important;
+      position: relative;
+    }
+
+    .main-container {
+      margin: 0 auto;
+      max-width: max-content;
+      border-radius: 8px;
+      position: relative;
+      border: 1px solid black;
+      overflow: clip;
+      position: relative;
+    }
+
+    .main-control-container {
       position: -webkit-sticky;
       position: sticky;
       top: 0;
-      background-color: yellow;
-      padding: 50px;
-      font-size: 20px;
-    }
-
-    div.btn-section {
-      margin-top: 20px !important;
-      margin-right: 10% !important;
-      display: block;
       float: right;
-      cursor: pointer;
-      position: fixed;
-      justify-content: flex-end;
-      z-index: 3;
-      right: 0;
-      top: 0;
+      width: 0;
+      height: max-content;
+      scroll-behavior: smooth;
+      padding-top: 1em;
+      padding-right: 2.5em;
+      z-index: 2;
     }
 
-    .pickr .pcr-button.clear {
-      background: white;
+    .main-content {
+      top: 0;
+      right: 0;
+      white-space: nowrap;
     }
 
     svg {
-      display: block;
       width: inherit;
-      min-width: inherit;
       height: inherit;
-      min-height: inherit;
-    }
-
-    .control-container {
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      margin-top: 2%;
-      margin-right: 2%;
     }
 
     .btn-controls {
@@ -165,31 +170,31 @@ function getWebviewContent(fileName: any, svgContent: any) {
     }
 
     .control-btn {
-      background-color: #1EBFAF !important;
-      border-color: #1EBFAF !important;
+      background-color: #209a8e !important;
+      border-color: #209a8e !important;
       font-weight: bold;
     }
 
     .control-btn:hover,
     .control-btn:active,
     .control-btn:visited {
-      background-color: #4B7D78 !important;
-      border-color: #4B7D78 !important;
+      background-color: #209a8e !important;
+      border-color: #209a8e !important;
     }
 
     .reset-btn {
       background-color: white !important;
-      color: #209A8E !important;
-      border: 2px solid #43C4B7 !important;
+      color: #209a8e !important;
+      border: 2px solid #209a8e !important;
       font-weight: 600;
     }
 
     .reset-btn:hover,
     .reset-btn:active,
     .reset-btn:visited {
-      background-color: #4B7D78 !important;
+      background-color: #209a8e !important;
       color: white !important;
-      border-color: #4B7D78 !important;
+      border-color: #209a8e !important;
     }
 
     #reset {
@@ -199,21 +204,24 @@ function getWebviewContent(fileName: any, svgContent: any) {
     }
 
     #hider {
-      border: 0.16em solid #43C4B7 !important;
+      border: 0.16em solid #209a8e !important;
+    }
+
+    .pickr .pcr-button.clear {
+      background: white;
     }
 
     .pickr-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 20px !important;
       margin-right: 10% !important;
       float: right;
-      position: fixed;
+      position: absolute;
       justify-content: flex-end;
-      z-index: 3;
+      padding: 2% 0%;
       right: 0;
-      top: 0;
+      top: 2%;
       width: max-content;
       height: max-content;
     }
@@ -235,8 +243,7 @@ function getWebviewContent(fileName: any, svgContent: any) {
 </head>
 
 <body>
-
-  <h2 style="font-size: 1.2em; margin-left: 10%; border: 1px solid black; width: max-content; padding: 4px 8px; border-radius: 4px; margin-bottom: 2%">${fileName}</h2>
+  <h2>${fileName}</h2>
 
   <div class="pickr-container">
     <div class="pickr"></div>
@@ -245,24 +252,28 @@ function getWebviewContent(fileName: any, svgContent: any) {
   <div class="btn-controls d-flex justify-content-center">
     <button id="hider" type="button" onclick="hideControls()" class="btn btn-outline-primary reset-btn btn-sm">Hide Controls</button>
   </div>
-
-  <section id="zoomText" class="d-flex justify-content-center">
-    <div id="container" style="margin: 3% 6% 3%; width: inherit; height: max-content; border:1px solid black; border-radius: 8px; position: relative; overflow: hidden;">
-      <div class="control-container d-flex align-items-end flex-column justify-content-center">
-        <div class="btn-controls">
-          <button id="zoom-out" type="button" class="control-btn btn btn-primary btn-sm">+</button>
-        </div>
-        <div class="btn-controls">
-          <button id="reset" type="button" class="btn btn-outline-primary reset-btn btn-sm">Reset</button>
-        </div>
-        <div class="btn-controls">
-          <button id="zoom-in" type="button" class="control-btn btn btn-primary btn-sm">-</button>
+  <div class="main-main-container">
+    <main class="main-container">
+      <div class="main-control-container d-flex align-items-end justify-content-center">
+        <div class="control-container d-flex align-items-end flex-column justify-content-center">
+          <div class="btn-controls">
+            <button id="zoom-out" type="button" class="control-btn btn btn-primary btn-sm">+</button>
+          </div>
+          <div class="btn-controls">
+            <button id="reset" type="button" class="btn btn-outline-primary reset-btn btn-sm">Reset</button>
+          </div>
+          <div class="btn-controls">
+            <button id="zoom-in" type="button" class="control-btn btn btn-primary btn-sm">-</button>
+          </div>
         </div>
       </div>
-      ${svgContent}
-    </div>
-  </section>
+      <div id="container" class="main-content">
+        <?xml version="1.0" encoding="UTF-8"?>
+        ${svgContent}
+      </div>
 
+    </main>
+  </div>
   <script>
     const inputElement = document.querySelector('.pickr');
     // Simple example, see optional options for more configuration.
@@ -302,42 +313,49 @@ function getWebviewContent(fileName: any, svgContent: any) {
       document.getElementById("container").style.background = color.toHEXA().toString();
       inputElement.style.background = pickr.getSelectedColor().toHEXA().toString();
     });
-
+    const svgElem = document.getElementsByTagName("svg")[0];
     // SVG Pan Zoom
     window.onload = function() {
-      const panZoom = svgPanZoom(document.getElementsByTagName("svg")[0], {
+      const panZoom = svgPanZoom(svgElem, {
         zoomEnabled: true,
         controlIconsEnabled: false
       });
-      document.getElementById('zoom-out').addEventListener('click', function(ev) {
-        ev.preventDefault()
-        panZoom.zoomIn()
+      document.getElementById("zoom-out").addEventListener("click", function(ev) {
+        ev.preventDefault();
+        panZoom.zoomIn();
       });
-      document.getElementById('zoom-in').addEventListener('click', function(ev) {
-        ev.preventDefault()
-        panZoom.zoomOut()
+      document.getElementById("zoom-in").addEventListener("click", function(ev) {
+        ev.preventDefault();
+        panZoom.zoomOut();
       });
-      document.getElementById('reset').addEventListener('click', function(ev) {
-        ev.preventDefault()
-        panZoom.resetZoom()
-        panZoom.resetPan()
+      document.getElementById("reset").addEventListener("click", function(ev) {
+        ev.preventDefault();
+        panZoom.resetZoom();
+        panZoom.resetPan();
       });
     };
-    
-    const controlDiv = document.querySelector('.control-container');
-    const hideToggle = document.querySelector('#hider');
-    
+    const controlDiv = document.querySelector(".control-container");
+    const hideToggle = document.querySelector("#hider");
     controlDiv.style.visibility = "visible";
-    
+
     function hideControls() {
       if (controlDiv.style.visibility === "visible") {
         controlDiv.style.visibility = "hidden";
-        hideToggle.textContent = 'Show Controls';
+        hideToggle.textContent = "Show Controls";
       } else {
         controlDiv.style.visibility = "visible";
-        hideToggle.textContent = 'Hide Controls';
+        hideToggle.textContent = "Hide Controls";
       }
     }
+    var rect = svgElem.getBoundingClientRect();
+    const mainContainer = document.querySelector(".main-container");
+    console.log(mainContainer);
+    // mainContainer.style.maxWidth = rect.width + "pt";
+    // mainContainer.style.maxHeight = rect.height + "pt";
+    console.log(mainContainer.style.maxWidth);
+    console.log(mainContainer.style.maxHeight);
+    console.log(rect.width);
+    console.log(rect.height);
   </script>
 </body>
 
