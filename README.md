@@ -1,11 +1,12 @@
 <p align="center">
    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
      <img alt="Version Number" src="https://vsmarketplacebadge.apphb.com/version-short/ahnafnafee.postscript-preview.svg"></a>
-   <a href="hhttps://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
+   <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
      <img alt="VS Code Marketplace Installs" src="https://vsmarketplacebadge.apphb.com/installs-short/ahnafnafee.postscript-preview.svg"></a>
    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
      <img alt="VS Code Marketplace Rating" src="https://vsmarketplacebadge.apphb.com/rating-short/ahnafnafee.postscript-preview.svg"></a>
 </p>
+
 
 <p align="center">
     <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="Logo"  width="128px" height="auto" />
