@@ -1,7 +1,11 @@
-[![](https://vsmarketplacebadge.apphb.com/version-short/ahnafnafee.postscript-preview.svg)](https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview) [![](https://vsmarketplacebadge.apphb.com/installs-short/ahnafnafee.postscript-preview.svg)](https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview) [![](https://vsmarketplacebadge.apphb.com/rating-short/ahnafnafee.postscript-preview.svg)](https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview)
-
-
-
+<p align="center">
+   <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
+     <img alt="Version Number" src="https://vsmarketplacebadge.apphb.com/version-short/ahnafnafee.postscript-preview.svg"></a>
+   <a href="hhttps://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
+     <img alt="VS Code Marketplace Installs" src="https://vsmarketplacebadge.apphb.com/installs-short/ahnafnafee.postscript-preview.svg"></a>
+   <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
+     <img alt="VS Code Marketplace Rating" src="https://vsmarketplacebadge.apphb.com/rating-short/ahnafnafee.postscript-preview.svg"></a>
+</p>
 
 <p align="center">
     <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="Logo"  width="128px" height="auto" />
@@ -14,12 +18,7 @@
 
 # PostScript Preview
 
-
-
 > PostScript Preview is an extension that helps to **preview** EPS and PS files in [Visual Studio Code](https://code.visualstudio.com/). It supercharges how your view PostScript files by also allowing to **pan** and **zoom** the image. You can also change the preview background for extra **customizations**.
-
-
-
 
 ## Features
 
@@ -45,10 +44,9 @@ Thus you need to install these two commands first and ensure they are in the exe
 For **macOS**, you can install them via [homebrew](https://brew.sh/):
 
 ```bash
-brew install ghostscript 
+brew install ghostscript
 brew install pdf2svg
 ```
-
 
 
 For **Ubuntu**, you can install them using the following commands:
@@ -59,8 +57,7 @@ sudo apt-get install pdf2svg -y
 ```
 
 
-
-For **Windows 10**, you need to have GhostScript installed in your system.  You can install  them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an administrative shell.
+For **Windows 10**, you need to have GhostScript installed in your system. You can install them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an administrative shell.
 
 ```bash
 choco install ghostscript --version 9.55.0 --force -y
@@ -71,7 +68,7 @@ choco install pdf2svg --ignore-checksums -y
 
 refreshenv
 
-set PATH=%PATH%;C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits
+set PATH=%PATH%;"C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits"
 ```
 
 You should now be able to view the EPS/PS files in the preview.
