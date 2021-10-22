@@ -1,11 +1,12 @@
 <p align="center">
    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
-     <img alt="Version Number" src="https://vsmarketplacebadge.apphb.com/version-short/ahnafnafee.postscript-preview.svg"></a>
+     <img alt="Version Number" src="https://vsmarketplacebadge.apphb.com/version-short/ahnafnafee.postscript-preview.svg?style=for-the-badge&logo=visualstudiocode"></a>
    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
-     <img alt="VS Code Marketplace Installs" src="https://vsmarketplacebadge.apphb.com/installs-short/ahnafnafee.postscript-preview.svg"></a>
+     <img alt="VS Code Marketplace Installs" src="https://vsmarketplacebadge.apphb.com/installs-short/ahnafnafee.postscript-preview.svg?style=for-the-badge&logo=visualstudiocode"></a>
    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview&ssr=false#review-details">
-     <img alt="VS Code Marketplace Rating" src="https://vsmarketplacebadge.apphb.com/rating-short/ahnafnafee.postscript-preview.svg"></a>
+     <img alt="VS Code Marketplace Rating" src="https://vsmarketplacebadge.apphb.com/rating-short/ahnafnafee.postscript-preview.svg?style=for-the-badge&logo=visualstudiocode"></a>
 </p>
+
 
 
 
@@ -18,9 +19,13 @@
 </p>
 
 
-# PostScript Preview
+<h1 align="center">PostScript Preview</h1>
+
+
 
 > PostScript Preview is an extension that helps to **preview** EPS and PS files in [Visual Studio Code](https://code.visualstudio.com/). It supercharges how your view PostScript files by also allowing to **pan** and **zoom** the image. You can also change the preview background for extra **customizations**.
+
+
 
 ## Features
 
@@ -87,7 +92,9 @@ C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits
 
 ## Known Issues
 
-None yet. If you run into issues, please report the issues. You are also encouraged to open pull requests for additional features and fixes you want to add to this extension.
+None yet. If you run into issues, please report them here: https://github.com/ahnafnafee/PostScript-Preview/issues 
+
+You are also encouraged to open pull requests for additional features and fixes you want to add to this extension.
 
 
 
