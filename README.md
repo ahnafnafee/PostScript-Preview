@@ -80,7 +80,7 @@ set PATH=%PATH%;"C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-mas
 
 You should now be able to view the EPS/PS files in the preview.
 
-If you are having issues setting the PATH, you can set it using the GUI instead as described [here](hhttps://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/). The paths that need to be added are:
+If you are having issues setting the PATH, you can set it using the GUI instead as described [here](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/). The paths that need to be added are:
 
 ```bash
 C:\Program Files\gs\gs9.55.0\lib
