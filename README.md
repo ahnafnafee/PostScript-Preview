@@ -64,18 +64,19 @@ sudo apt-get install pdf2svg -y
 ```
 
 
-For **Windows 10**, you need to have GhostScript installed in your system. You can install them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an administrative shell.
+For **Windows 10**, you need to have GhostScript installed in your system. You can install them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an **Administrative PowerShell**.
 
+Installs GhostScript for _ps2pdf_
 ```bash
 choco install ghostscript --version 9.55.0 --force -y
-
-set PATH=%PATH%;"C:\Program Files\gs\gs9.55.0\lib";"C:\Program Files\gs\gs9.55.0\bin"
-
+```
+Installs _pdf2svg_
+```bash
 choco install pdf2svg --ignore-checksums -y
-
-refreshenv
-
-set PATH=%PATH%;"C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits"
+```
+Adds the executables to the environment path
+```bash
+[Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";C:\Program Files\gs\gs9.55.0\lib;C:\Program Files\gs\gs9.55.0\bin;C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits",[EnvironmentVariableTarget]::Machine)
 ```
 
 You should now be able to view the EPS/PS files in the preview.
@@ -87,7 +88,7 @@ C:\Program Files\gs\gs9.55.0\lib
 C:\Program Files\gs\gs9.55.0\bin
 C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits
 ```
-
+Please verify that you can view files in the above folders. If the folders do not exists, you might have run into issues with your installation. It's good to close Logitech GHUB and Logitech GHUB Updater when you install these as they might interfere with the process.
 
 
 ## Known Issues
