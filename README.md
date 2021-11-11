@@ -79,7 +79,7 @@ Adds the executables to the environment path
 [Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";C:\Program Files\gs\gs9.55.0\lib;C:\Program Files\gs\gs9.55.0\bin;C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits",[EnvironmentVariableTarget]::Machine)
 ```
 
-You should now be able to view the EPS/PS files in the preview.
+**Now close restart VSCode**. You should now be able to view the EPS/PS files in the preview.
 
 If you are having issues setting the PATH, you can set it using the GUI instead as described [here](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/). The paths that need to be added are:
 
