@@ -2,6 +2,13 @@
 
 
 
+## [0.3.2] - 2021-11-11
+
+- Fixed README instructions
+- Version bump
+
+
+
 ## [0.3.1] - 2021-10-22
 
 - Version bump
