@@ -68,7 +68,7 @@ Installs GhostScript for _ps2pdf_
 ```bash
 choco install ghostscript --version 9.55.0 --force -y
 ```
-Installs _pdftocairo_ (fallback)
+Installs _pdftocairo_
 ```bash
 choco install poppler -y
 ```
