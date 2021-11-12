@@ -109,7 +109,7 @@ function isMajorUpdate(previousVersion: string, currentVersion: string) {
 	var currentVerArr = currentVersion.split(".").map(Number);
 
 	// For pdftocairo bug fix
-	if (currentVerArr[1] > previousVerArr[1]) {
+	if (currentVerArr[1] > previousVerArr[1] || currentVerArr[2] > previousVerArr[2]) {
 		return true;
 	} else {
 		return false;
@@ -140,7 +140,7 @@ async function showWhatsNew(context: ExtensionContext) {
 			if (result === actions[0]) {
 				await env.openExternal(
 					Uri.parse(
-						"https://github.com/ahnafnafee/PostScript-Preview#requirements"
+						"https://github.com/ahnafnafee/PostScript-Preview#windows"
 					)
 				);
 			}
