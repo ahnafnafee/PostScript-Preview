@@ -64,7 +64,7 @@ You can install them using the following commands:
 sudo apt-get install ghostscript -y
 ```
 
-### **Windows 10**
+### **Windows**
 
 You need to have GhostScript installed in your system. You can install them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an **Administrative PowerShell**.
 
