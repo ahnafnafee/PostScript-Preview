@@ -48,21 +48,25 @@ This extension also depends on two commands:
 
 Thus you need to install these two commands first and ensure they are in the executable path.
 
-For **macOS**, you can install them via [homebrew](https://brew.sh/):
+### **macOS**
+
+You can install them via [homebrew](https://brew.sh/):
 
 ```bash
 brew install ghostscript
 ```
 
+### **Ubuntu**
 
-For **Ubuntu**, you can install them using the following commands:
+You can install them using the following commands:
 
 ```bash
 sudo apt-get install ghostscript -y
 ```
 
+### **Windows 10**
 
-For **Windows 10**, you need to have GhostScript installed in your system. You can install them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an **Administrative PowerShell**.
+You need to have GhostScript installed in your system. You can install them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an **Administrative PowerShell**.
 
 Installs GhostScript for _ps2pdf_
 ```bash
