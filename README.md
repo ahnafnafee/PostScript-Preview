@@ -84,7 +84,6 @@ If you are having issues setting the PATH, you can set it using the GUI instead 
 ```bash
 C:\Program Files\gs\gs9.55.0\lib
 C:\Program Files\gs\gs9.55.0\bin
-C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits
 C:\ProgramData\chocolatey\lib\poppler\tools
 ```
 _Please verify that you can view files in the above folders. If the folders do not exist, you might have run into issues with your installation. It's good to close Logitech GHUB and Logitech GHUB Updater when you install these as they might interfere with the process._
