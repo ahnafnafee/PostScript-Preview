@@ -44,7 +44,7 @@ You can install that [extension](https://marketplace.visualstudio.com/items?item
 This extension also depends on two commands:
 
 - `ps2pdf` - to first convert the EPS/PS file to PDF (the command is part of GhostScript)
-- `pdf2svg` - to convert the generated pdf to svg which is shown in the preview
+- `pdftocairo` - to convert the generated pdf to svg which is shown in the preview
 
 Thus you need to install these two commands first and ensure they are in the executable path.
 
@@ -52,7 +52,6 @@ For **macOS**, you can install them via [homebrew](https://brew.sh/):
 
 ```bash
 brew install ghostscript
-brew install pdf2svg
 ```
 
 
@@ -60,7 +59,6 @@ For **Ubuntu**, you can install them using the following commands:
 
 ```bash
 sudo apt-get install ghostscript -y
-sudo apt-get install pdf2svg -y
 ```
 
 
@@ -70,13 +68,13 @@ Installs GhostScript for _ps2pdf_
 ```bash
 choco install ghostscript --version 9.55.0 --force -y
 ```
-Installs _pdf2svg_
+Installs _pdftocairo_ (fallback)
 ```bash
-choco install pdf2svg --ignore-checksums -y
+choco install poppler -y
 ```
 Adds the executables to the environment path
 ```bash
-[Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";C:\Program Files\gs\gs9.55.0\lib;C:\Program Files\gs\gs9.55.0\bin;C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits",[EnvironmentVariableTarget]::Machine)
+[Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";C:\Program Files\gs\gs9.55.0\lib;C:\Program Files\gs\gs9.55.0\bin;C:\ProgramData\chocolatey\lib\poppler\tools",[EnvironmentVariableTarget]::Machine)
 ```
 
 **Now restart VSCode**. You should now be able to view the EPS/PS files in the preview.
@@ -87,6 +85,7 @@ If you are having issues setting the PATH, you can set it using the GUI instead 
 C:\Program Files\gs\gs9.55.0\lib
 C:\Program Files\gs\gs9.55.0\bin
 C:\ProgramData\chocolatey\lib\pdf2svg\tools\pdf2svg-windows-master\dist-64bits
+C:\ProgramData\chocolatey\lib\poppler\tools
 ```
 _Please verify that you can view files in the above folders. If the folders do not exist, you might have run into issues with your installation. It's good to close Logitech GHUB and Logitech GHUB Updater when you install these as they might interfere with the process._
 

@@ -2,6 +2,13 @@
 
 
 
+## [0.4.0] - 2021-11-11
+
+- Fixed pdf conversion error
+- Updated README with new instructions
+
+
+
 ## [0.3.2] - 2021-11-11
 
 - Fixed README instructions

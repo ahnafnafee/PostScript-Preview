@@ -5,10 +5,19 @@ import { execSync } from 'child_process';
 import temp = require('temp');
 import fs = require('fs');
 import path = require('path');
+import {window, ExtensionContext, extensions, env, Uri} from "vscode";
+
+const extensionId = "ahnafnafee.postscript-preview";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+
+	const isWindows = process.platform === "win32";
+
+	if (isWindows) {
+		showWhatsNew(context); // show notification in case of a minor release i.e. 1.1.0 -> 1.2.0
+	}
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -52,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
 				try {
 					execSync(`ps2pdf -dEPSCrop "${mainFilePath}" "${pdfInfo.path}"`);
 				} catch (err) {
-					vscode.window.showInformationMessage('Failed to execute ps2pdf, is that installed?');
+					vscode.window.showInformationMessage('Failed to execute ps2pdf. Report bug with postscript file to dev.');
 					console.log("Error executing ps2pdf.");
 					console.log(err);
 					// Clean up
@@ -60,10 +69,10 @@ export function activate(context: vscode.ExtensionContext) {
 					return;
 				}
 				try {
-					execSync(`pdf2svg "${pdfInfo.path}" "${svgInfo.path}"`);
-				} catch (err) {
-					vscode.window.showInformationMessage('Failed to execute pdf2svg, is that installed?');
-					console.log("Error executing pdf2svg.");
+					execSync(`pdftocairo -svg -f 1 -l 1 "${pdfInfo.path}" "${svgInfo.path}"`);
+        } catch (err) {
+					vscode.window.showInformationMessage('Failed to execute pdftocairo. Report bug with postscript file to dev.');
+					console.log("Error executing pdftocairo.");
 					console.log(err);
 					// Clean up
 					temp.cleanupSync();
@@ -87,6 +96,56 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+}
+
+// https://stackoverflow.com/a/66303259/3073272
+function isMajorUpdate(previousVersion: string, currentVersion: string) {
+	// rain-check for malformed string
+	if (previousVersion.indexOf(".") === -1) {
+		return true;
+	}
+	//returns int array [1,1,1] i.e. [major,minor,patch]
+	var previousVerArr = previousVersion.split(".").map(Number);
+	var currentVerArr = currentVersion.split(".").map(Number);
+
+	// For pdftocairo bug fix
+	if (currentVerArr[1] > previousVerArr[1]) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+async function showWhatsNew(context: ExtensionContext) {
+	const previousVersion = context.globalState.get<string>(extensionId);
+	const currentVersion = extensions.getExtension(extensionId)!.packageJSON
+		.version;
+
+	// store latest version
+	context.globalState.update(extensionId, currentVersion);
+
+	if (
+		previousVersion === undefined ||
+		isMajorUpdate(previousVersion, currentVersion)
+	) {
+		// show whats new notificatin:
+		const actions = [{ title: "See Requirements" }];
+
+		const result = await window.showInformationMessage(
+			`PostScript Preview v${currentVersion} — READ NEW REQUIREMENTS!`,
+			...actions
+		);
+
+		if (result !== null) {
+			if (result === actions[0]) {
+				await env.openExternal(
+					Uri.parse(
+						"https://github.com/ahnafnafee/PostScript-Preview#requirements"
+					)
+				);
+			}
+		}
+	}
 }
 
 // this method is called when your extension is deactivated

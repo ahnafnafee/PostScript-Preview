@@ -1,0 +1,100 @@
+50 50 translate
+/mreza {0.5 0.3 0 0 setcmykcolor 
+gsave
+2 setlinewidth 500 0 moveto 0 0 lineto 0 500 lineto stroke
+grestore
+gsave
+0.3 setlinewidth
+5 { 30 100 moveto 500 100 lineto stroke 0 100 translate } repeat
+grestore
+gsave
+0.3 setlinewidth
+5 { 100 20 moveto 100 500 lineto stroke 100 0 translate } repeat
+grestore
+gsave
+/tekst 3 string def /Helvetica findfont 10 scalefont setfont
+100 100 500 { /y exch def 5 y 2 sub moveto y tekst cvs show } for
+90 100 500 { /x exch def x 5 moveto x 10 add tekst cvs show } for
+grestore 
+0 setgray } bind def
+mreza
+
+0.5 setgray
+4 setlinewidth
+200 300 moveto
+100 100 lineto
+300 100 lineto
+closepath
+1 setlinejoin
+2 setlinecap
+fill
+
+0.9 setgray
+175 250 moveto
+200 300 lineto
+225 250 lineto
+210 230 lineto
+200 250 lineto
+190 235 lineto
+closepath
+fill
+
+1 setgray
+150 100 moveto
+150 150 lineto
+140 140 lineto
+150 150 moveto
+160 140 lineto
+150 130 moveto
+140 120 lineto
+150 130 moveto
+160 120 lineto
+
+250 100 moveto
+250 150 lineto
+240 140 lineto
+250 150 moveto
+260 140 lineto
+250 130 moveto
+240 120 lineto
+250 130 moveto
+260 120 lineto
+stroke
+
+200 100 moveto
+200 200 lineto
+190 190 lineto
+200 200 moveto
+210 190 lineto
+200 180 moveto
+190 170 lineto
+200 180 moveto
+210 170 lineto
+200 160 moveto
+190 150 lineto
+200 160 moveto
+210 150 lineto
+1 setlinecap
+stroke
+
+0 setgray
+4 setlinewidth
+175 250 moveto
+100 100 lineto
+300 100 lineto
+225 250 lineto
+1 setlinejoin
+2 setlinecap
+stroke
+
+0.9 setgray
+175 250 moveto
+200 300 lineto
+225 250 lineto
+210 230 lineto
+200 250 lineto
+190 235 lineto
+0 setlinejoin
+0 setlinecap
+stroke
+fill
