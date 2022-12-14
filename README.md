@@ -1,10 +1,7 @@
 <p align="center">
-   <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
-     <img alt="Version Number" src="https://vsmarketplacebadge.apphb.com/version-short/ahnafnafee.postscript-preview.svg?style=for-the-badge&logo=visualstudiocode"></a>
-   <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview">
-     <img alt="VS Code Marketplace Installs" src="https://vsmarketplacebadge.apphb.com/installs-short/ahnafnafee.postscript-preview.svg?style=for-the-badge&logo=visualstudiocode"></a>
-   <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview&ssr=false#review-details">
-     <img alt="VS Code Marketplace Rating" src="https://vsmarketplacebadge.apphb.com/rating-short/ahnafnafee.postscript-preview.svg?style=for-the-badge&logo=visualstudiocode"></a>
+    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview"><img src="https://img.shields.io/visual-studio-marketplace/v/ahnafnafee.postscript-preview?logo=visualstudiocode&style=for-the-badge" alt="Version" /></a>
+    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview"><img src="https://img.shields.io/visual-studio-marketplace/r/ahnafnafee.postscript-preview?logo=visualstudiocode&style=for-the-badge" alt="Rating" /></a>
+    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview"><img src="https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/ahnafnafee.postscript-preview?logo=visualstudiocode&style=for-the-badge" alt="Installs" /></a>
 </p>
 
 
