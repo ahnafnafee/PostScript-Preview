@@ -1,9 +1,8 @@
 name: Publish extension
 
 on:
-    push:
-        tags:
-            - "v*"
+    release:
+        types: [created]
 
 jobs:
     openvsx:
