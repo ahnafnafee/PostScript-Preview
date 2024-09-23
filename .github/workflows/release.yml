@@ -1,4 +1,4 @@
-name: Build extension
+name: Build & Publish Extension
 
 on:
     push:
