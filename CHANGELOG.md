@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.4.3] - 2024-09-23
+## [0.4.4] - 2024-09-23
 
 -   Fixed README issues
 -   Added doc to pin to version 0.89.0 for poppler on Windows

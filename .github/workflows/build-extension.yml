@@ -2,7 +2,7 @@ name: Build extension
 
 on:
     push:
-        branches: ["fix-readme"]
+        branches: ["main"]
 
 jobs:
     build:
@@ -27,7 +27,7 @@ jobs:
             - name: Build extension
               run: vsce package -o postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
             - name: Upload a Build Artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
                   path: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
@@ -37,5 +37,5 @@ jobs:
               uses: softprops/action-gh-release@v1
               with:
                   name: Release v${{ steps.package-version.outputs.current-version }}
-                  draft: true
+                  draft: false
                   files: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
