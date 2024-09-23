@@ -1,0 +1,39 @@
+name: Build extension
+
+on:
+    push:
+        branches: ["fix-readme"]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        name: Build and package
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js 20
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: "npm"
+                  registry-url: https://registry.npmjs.org/
+            - name: Install dependencies
+              run: npm ci
+            - name: Get NPM Version
+              id: package-version
+              uses: martinbeentjes/npm-get-version-action@v1.3.1
+            - name: Build extension
+              run: vsce package -o postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
+            - name: Upload a Build Artifact
+              uses: actions/upload-artifact@v3
+              with:
+                  name: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
+                  path: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
+                  if-no-files-found: error
+            - name: Create release with artifact
+              if: ${{ success() && steps.package-version.outputs.current-version }}
+              uses: softprops/action-gh-release@v1
+              with:
+                  name: Release v${{ steps.package-version.outputs.current-version }}
+                  draft: true
+                  files: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix

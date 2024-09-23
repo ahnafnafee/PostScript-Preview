@@ -1,99 +1,138 @@
+// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+import { execSync } from "child_process";
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
-import { execSync } from 'child_process';
-import temp = require('temp');
-import fs = require('fs');
-import path = require('path');
-import {window, ExtensionContext, extensions, env, Uri} from "vscode";
+import * as vscode from "vscode";
+// biome-ignore lint/style/useImportType: <explanation>
+import { ExtensionContext, Uri, env, extensions, window } from "vscode";
+import temp = require("temp");
+// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+import fs = require("fs");
+// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+import path = require("path");
 
 const extensionId = "ahnafnafee.postscript-preview";
+
+function generatePreview(filepath: string, panel: vscode.WebviewPanel) {
+	temp.track();
+	temp.open(
+		{ prefix: "postscript-preview-svg_", suffix: ".pdf" },
+		(pdfErr, pdfInfo) => {
+			if (pdfErr) {
+				console.log("Creating temporary file eps-preview-pdf failed.");
+				return;
+			}
+			temp.open(
+				{ prefix: "postscript-preview-svg_", suffix: ".svg" },
+				(svgErr, svgInfo) => {
+					if (svgErr) {
+						console.log("Creating temporary file eps-preview-svg failed.");
+						return;
+					}
+					// Transform EPS to SVG
+					// Thank https://superuser.com/a/769466/502597.
+					try {
+						execSync(`ps2pdf -dEPSCrop "${filepath}" "${pdfInfo.path}"`);
+					} catch (err) {
+						vscode.window.showInformationMessage(
+							"Failed to execute ps2pdf. Report bug with postscript file to dev.",
+						);
+						console.log("Error executing ps2pdf.");
+						console.log(err);
+						// Clean up
+						temp.cleanupSync();
+						return;
+					}
+					try {
+						execSync(
+							`pdftocairo -svg -f 1 -l 1 "${pdfInfo.path}" "${svgInfo.path}"`,
+						);
+					} catch (err) {
+						vscode.window.showInformationMessage(
+							"Failed to execute pdftocairo. Report bug with postscript file to dev.",
+						);
+						console.log("Error executing pdftocairo.");
+						console.log(err);
+						// Clean up
+						temp.cleanupSync();
+						return;
+					}
+					try {
+						const stat = fs.fstatSync(svgInfo.fd);
+						const svgContent = Buffer.alloc(stat.size);
+						fs.readSync(svgInfo.fd, svgContent, 0, stat.size, null);
+						// Show SVG in the webview panel
+						panel.webview.html = getWebviewContent(
+							path.basename(filepath),
+							svgContent,
+						);
+					} catch (err) {
+						console.log("Error reading the final file.");
+						console.log(err);
+					}
+				},
+			);
+		},
+	);
+
+	// Clean up
+	temp.cleanupSync();
+}
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
 	const isWindows = process.platform === "win32";
 
 	if (isWindows) {
 		showWhatsNew(context); // show notification in case of a minor release i.e. 1.1.0 -> 1.2.0
 	}
 
+	const channel = vscode.window.createOutputChannel("PostScript-Preview");
+
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('postscript-preview.sidePreview', () => {
+	const disposable = vscode.commands.registerCommand(
+		"postscript-preview.sidePreview",
+		() => {
+			// Get the EPS content
+			const document = vscode.window.activeTextEditor?.document;
 
-		// Create new panel
-		let panel = vscode.window.createWebviewPanel('', 'PostScript Preview',
-			vscode.ViewColumn.Beside,
-			{
-				enableScripts: true
-			}
-		);
-
-		// Get the EPS content
-		const document = vscode.window.activeTextEditor?.document;
-
-		if (!document) {
-			// No active document
-			console.log("No active document. Do nothing.");
-			return;
-    }
-
-		const epsContent = document.getText();
-		const filename = path.basename(document.fileName);
-		let mainFilePath = document.fileName;
-
-		temp.track();
-		temp.open({prefix: "postscript-preview-svg_", suffix: '.pdf'}, function (pdfErr, pdfInfo) {
-      if (pdfErr) {
-				console.log("Creating temporary file eps-preview-pdf failed.");
+			if (!document) {
+				// No active document
+				console.log("No active document. Do nothing.");
 				return;
 			}
-			temp.open({prefix: "postscript-preview-svg_", suffix: '.svg'}, function (svgErr, svgInfo) {
-				if (svgErr) {
-					console.log("Creating temporary file eps-preview-svg failed.");
-					return;
-				}
-				// Transform EPS to SVG
-				// Thank https://superuser.com/a/769466/502597.
-				try {
-					execSync(`ps2pdf -dEPSCrop "${mainFilePath}" "${pdfInfo.path}"`);
-				} catch (err) {
-					vscode.window.showInformationMessage('Failed to execute ps2pdf. Report bug with postscript file to dev.');
-					console.log("Error executing ps2pdf.");
-					console.log(err);
-					// Clean up
-					temp.cleanupSync();
-					return;
-				}
-				try {
-					execSync(`pdftocairo -svg -f 1 -l 1 "${pdfInfo.path}" "${svgInfo.path}"`);
-        } catch (err) {
-					vscode.window.showInformationMessage('Failed to execute pdftocairo. Report bug with postscript file to dev.');
-					console.log("Error executing pdftocairo.");
-					console.log(err);
-					// Clean up
-					temp.cleanupSync();
-					return;
-				}
-				try {
-					const stat = fs.fstatSync(svgInfo.fd);
-					let svgContent = Buffer.alloc(stat.size);
-					fs.readSync(svgInfo.fd, svgContent, 0, stat.size, null);
-					// Show SVG in the webview panel
-					panel.webview.html = getWebviewContent(filename, svgContent);
-				} catch (err) {
-					console.log("Error reading the final file.");
-					console.log(err);
-				}
-			});
-		});
 
-		// Clean up
-		temp.cleanupSync();
-	});
+			const filename = path.basename(document.fileName);
+			const filePath = document.uri.fsPath;
+
+			// Create new panel
+			const panel = vscode.window.createWebviewPanel(
+				"",
+				`PostScript Preview - ${filename}`,
+				vscode.ViewColumn.Beside,
+				{
+					enableScripts: true,
+				},
+			);
+
+			const mainFilePath = document.fileName;
+
+			generatePreview(mainFilePath, panel);
+			channel.appendLine(`Watching ${filePath}`);
+			const watcher = vscode.workspace.createFileSystemWatcher(filePath);
+			watcher.onDidChange((_: vscode.Uri) => {
+				channel.appendLine(`File changed, regenerating : ${filePath}`);
+				generatePreview(mainFilePath, panel);
+			});
+			panel.onDidDispose(() => {
+				watcher.dispose();
+				channel.appendLine(`Stop watching ${filePath}`);
+			});
+		},
+	);
 
 	context.subscriptions.push(disposable);
 }
@@ -105,21 +144,23 @@ function isMajorUpdate(previousVersion: string, currentVersion: string) {
 		return true;
 	}
 	//returns int array [1,1,1] i.e. [major,minor,patch]
-	var previousVerArr = previousVersion.split(".").map(Number);
-	var currentVerArr = currentVersion.split(".").map(Number);
+	const previousVerArr = previousVersion.split(".").map(Number);
+	const currentVerArr = currentVersion.split(".").map(Number);
 
 	// For pdftocairo bug fix
-	if (currentVerArr[1] > previousVerArr[1] || currentVerArr[2] > previousVerArr[2]) {
+	if (
+		currentVerArr[1] > previousVerArr[1] ||
+		currentVerArr[2] > previousVerArr[2]
+	) {
 		return true;
-	} else {
-		return false;
 	}
+	return false;
 }
 
 async function showWhatsNew(context: ExtensionContext) {
 	const previousVersion = context.globalState.get<string>(extensionId);
-	const currentVersion = extensions.getExtension(extensionId)!.packageJSON
-		.version;
+	const currentVersion =
+		extensions.getExtension(extensionId)?.packageJSON.version;
 
 	// store latest version
 	context.globalState.update(extensionId, currentVersion);
@@ -128,20 +169,18 @@ async function showWhatsNew(context: ExtensionContext) {
 		previousVersion === undefined ||
 		isMajorUpdate(previousVersion, currentVersion)
 	) {
-		// show whats new notificatin:
+		// show whats new notification:
 		const actions = [{ title: "See Requirements" }];
 
 		const result = await window.showInformationMessage(
 			`PostScript Preview v${currentVersion} — READ NEW REQUIREMENTS!`,
-			...actions
+			...actions,
 		);
 
 		if (result !== null) {
 			if (result === actions[0]) {
 				await env.openExternal(
-					Uri.parse(
-						"https://github.com/ahnafnafee/PostScript-Preview#windows"
-					)
+					Uri.parse("https://github.com/ahnafnafee/PostScript-Preview#windows"),
 				);
 			}
 		}
@@ -151,7 +190,7 @@ async function showWhatsNew(context: ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
-
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function getWebviewContent(fileName: any, svgContent: any) {
 	return `
 <!DOCTYPE html>

@@ -2,15 +2,13 @@
 	"name": "postscript-preview",
 	"displayName": "PostScript Preview",
 	"description": "PostScript Preview is an extension that helps to preview EPS and PS files in Visual Studio Code.",
-	"version": "0.4.2",
+	"version": "0.4.3",
 	"icon": "images/logo.png",
 	"publisher": "ahnafnafee",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
-	"categories": [
-		"Other"
-	],
+	"categories": ["Other"],
 	"author": {
 		"name": "Ahnaf An Nafee",
 		"email": "ahnafnafee@gmail.com"
@@ -19,12 +17,7 @@
 		"color": "#4B7D78",
 		"theme": "dark"
 	},
-	"keywords": [
-		"postscript",
-		"ghostscript",
-		"ps",
-		"preview"
-	],
+	"keywords": ["postscript", "ghostscript", "ps", "preview"],
 	"activationEvents": [
 		"onCommand:postscript-preview.sidePreview",
 		"onLanguage:postscript"
@@ -77,5 +70,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ahnafnafee/PostScript-Preview.git"
+	},
+	"sponsor": {
+		"url": "https://github.com/sponsors/ahnafnafee"
 	}
 }
