@@ -35,6 +35,8 @@ jobs:
             - name: Create release with artifact
               if: ${{ success() && steps.package-version.outputs.current-version }}
               uses: softprops/action-gh-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.github_token }}
               with:
                   name: Release v${{ steps.package-version.outputs.current-version }}
                   tag_name: v${{ steps.package-version.outputs.current-version }}
