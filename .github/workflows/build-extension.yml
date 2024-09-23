@@ -18,7 +18,9 @@ jobs:
                   cache: "npm"
                   registry-url: https://registry.npmjs.org/
             - name: Install dependencies
-              run: npm ci
+              run: |
+                  npm install -g @vscode/vsce
+                  npm ci
             - name: Get NPM Version
               id: package-version
               uses: martinbeentjes/npm-get-version-action@v1.3.1
