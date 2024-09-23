@@ -37,5 +37,6 @@ jobs:
               uses: softprops/action-gh-release@v1
               with:
                   name: Release v${{ steps.package-version.outputs.current-version }}
+                  tag_name: v${{ steps.package-version.outputs.current-version }}
                   draft: false
                   files: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
