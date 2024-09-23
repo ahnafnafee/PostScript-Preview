@@ -1,8 +1,10 @@
 name: Publish extension
 
 on:
-    release:
-        types: [created]
+    workflow_run:
+        workflows: [Build extension]
+        types:
+            - completed
 
 jobs:
     openvsx:
