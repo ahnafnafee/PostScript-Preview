@@ -1,5 +1,5 @@
 // biome-ignore lint/style/useNodejsImportProtocol: <explanation>
-import { execSync } from "child_process";
+import { execSync, spawnSync } from "child_process";
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
@@ -13,186 +13,446 @@ import path = require("path");
 
 const extensionId = "ahnafnafee.postscript-preview";
 
-function generatePreview(filepath: string, panel: vscode.WebviewPanel) {
-	temp.track();
-	temp.open(
-		{ prefix: "postscript-preview-svg_", suffix: ".pdf" },
-		(pdfErr, pdfInfo) => {
-			if (pdfErr) {
-				console.log("Creating temporary file eps-preview-pdf failed.");
-				return;
-			}
-			temp.open(
-				{ prefix: "postscript-preview-svg_", suffix: ".svg" },
-				(svgErr, svgInfo) => {
-					if (svgErr) {
-						console.log("Creating temporary file eps-preview-svg failed.");
-						return;
-					}
-					// Transform EPS to SVG
-					// Thank https://superuser.com/a/769466/502597.
-					try {
-						execSync(`ps2pdf -dEPSCrop "${filepath}" "${pdfInfo.path}"`);
-					} catch (err) {
-						vscode.window.showInformationMessage(
-							"Failed to execute ps2pdf. Report bug with postscript file to dev.",
-						);
-						console.log("Error executing ps2pdf.");
-						console.log(err);
-						// Clean up
-						temp.cleanupSync();
-						return;
-					}
-					try {
-						execSync(
-							`pdftocairo -svg -f 1 -l 1 "${pdfInfo.path}" "${svgInfo.path}"`,
-						);
-					} catch (err) {
-						vscode.window.showInformationMessage(
-							"Failed to execute pdftocairo. Report bug with postscript file to dev.",
-						);
-						console.log("Error executing pdftocairo.");
-						console.log(err);
-						// Clean up
-						temp.cleanupSync();
-						return;
-					}
-					try {
-						const stat = fs.fstatSync(svgInfo.fd);
-						const svgContent = Buffer.alloc(stat.size);
-						fs.readSync(svgInfo.fd, svgContent, 0, stat.size, null);
-						// Show SVG in the webview panel
-						panel.webview.html = getWebviewContent(
-							path.basename(filepath),
-							svgContent,
-						);
-					} catch (err) {
-						console.log("Error reading the final file.");
-						console.log(err);
-					}
-				},
-			);
-		},
-	);
+// Get configuration values for executable paths
+function getConfig() {
+    const config = vscode.workspace.getConfiguration("postscript-preview");
+    return {
+        ps2pdf: config.get<string>("path.ps2pdf", "ps2pdf"),
+        pdftocairo: config.get<string>("path.pdftocairo", "pdftocairo"),
+        pdfinfo: config.get<string>("path.pdfinfo", "pdfinfo"),
+    };
+}
 
-	// Clean up
-	temp.cleanupSync();
+// Get page count from PDF using pdfinfo
+function getPageCount(pdfPath: string, channel: vscode.OutputChannel): number {
+    const config = getConfig();
+    try {
+        const result = execSync(`"${config.pdfinfo}" "${pdfPath}"`, {
+            encoding: "utf-8",
+        });
+        const match = result.match(/Pages:\s+(\d+)/);
+        if (match) {
+            return parseInt(match[1], 10);
+        }
+    } catch (err) {
+        channel.appendLine(
+            `Warning: Could not get page count using pdfinfo: ${err}`
+        );
+    }
+    return 1; // Default to 1 page
+}
+
+// State for multi-page documents
+interface PreviewState {
+    currentPage: number;
+    totalPages: number;
+    pdfPath: string;
+    filepath: string;
+}
+
+function generatePreview(
+    filepath: string,
+    panel: vscode.WebviewPanel,
+    channel: vscode.OutputChannel,
+    pageNumber: number = 1,
+    existingPdfPath?: string
+) {
+    const config = getConfig();
+    temp.track();
+
+    // Helper function to generate SVG from existing PDF
+    const generateSvgFromPdf = (pdfPath: string, totalPages: number) => {
+        temp.open(
+            { prefix: "postscript-preview-svg_", suffix: ".svg" },
+            (svgErr, svgInfo) => {
+                if (svgErr) {
+                    console.log(
+                        "Creating temporary file eps-preview-svg failed."
+                    );
+                    return;
+                }
+                try {
+                    execSync(
+                        `"${config.pdftocairo}" -svg -f ${pageNumber} -l ${pageNumber} "${pdfPath}" "${svgInfo.path}"`
+                    );
+                } catch (err) {
+                    vscode.window.showInformationMessage(
+                        "Failed to execute pdftocairo. Report bug with postscript file to dev."
+                    );
+                    console.log("Error executing pdftocairo.");
+                    console.log(err);
+                    temp.cleanupSync();
+                    return;
+                }
+                try {
+                    const stat = fs.fstatSync(svgInfo.fd);
+                    const svgContent = Buffer.alloc(stat.size);
+                    fs.readSync(svgInfo.fd, svgContent, 0, stat.size, null);
+                    // Show SVG in the webview panel
+                    panel.webview.html = getWebviewContent(
+                        path.basename(filepath),
+                        svgContent,
+                        pageNumber,
+                        totalPages
+                    );
+                } catch (err) {
+                    console.log("Error reading the final file.");
+                    console.log(err);
+                }
+            }
+        );
+    };
+
+    // If we have an existing PDF (page navigation), use it directly
+    if (existingPdfPath) {
+        const totalPages = getPageCount(existingPdfPath, channel);
+        generateSvgFromPdf(existingPdfPath, totalPages);
+        return existingPdfPath;
+    }
+
+    // Otherwise, generate new PDF from PS/EPS file
+    let pdfPathResult: string | undefined;
+    temp.open(
+        { prefix: "postscript-preview-svg_", suffix: ".pdf" },
+        (pdfErr, pdfInfo) => {
+            if (pdfErr) {
+                console.log("Creating temporary file eps-preview-pdf failed.");
+                return;
+            }
+            // Transform EPS to PDF using ps2pdf
+            // Capture stdout/stderr for console output display (Issue #7)
+            try {
+                const ps2pdfResult = spawnSync(
+                    config.ps2pdf,
+                    ["-dEPSCrop", filepath, pdfInfo.path],
+                    { encoding: "utf-8", shell: true }
+                );
+
+                // Display any console output from GhostScript
+                if (ps2pdfResult.stdout && ps2pdfResult.stdout.trim()) {
+                    channel.appendLine("--- GhostScript Output ---");
+                    channel.appendLine(ps2pdfResult.stdout);
+                    channel.show(true); // Show output channel without taking focus
+                }
+                if (ps2pdfResult.stderr && ps2pdfResult.stderr.trim()) {
+                    channel.appendLine("--- GhostScript Errors/Warnings ---");
+                    channel.appendLine(ps2pdfResult.stderr);
+                    channel.show(true);
+                }
+
+                if (ps2pdfResult.status !== 0) {
+                    throw new Error(
+                        `ps2pdf exited with code ${ps2pdfResult.status}`
+                    );
+                }
+            } catch (err) {
+                vscode.window.showInformationMessage(
+                    "Failed to execute ps2pdf. Report bug with postscript file to dev."
+                );
+                console.log("Error executing ps2pdf.");
+                console.log(err);
+                temp.cleanupSync();
+                return;
+            }
+
+            // Get page count for multi-page navigation
+            const totalPages = getPageCount(pdfInfo.path, channel);
+            pdfPathResult = pdfInfo.path;
+
+            // Store state in webview for page navigation
+            (panel as any).__previewState = {
+                currentPage: pageNumber,
+                totalPages: totalPages,
+                pdfPath: pdfInfo.path,
+                filepath: filepath,
+            } as PreviewState;
+
+            generateSvgFromPdf(pdfInfo.path, totalPages);
+        }
+    );
+
+    return pdfPathResult;
 }
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	const isWindows = process.platform === "win32";
+    const isWindows = process.platform === "win32";
 
-	if (isWindows) {
-		showWhatsNew(context); // show notification in case of a minor release i.e. 1.1.0 -> 1.2.0
-	}
+    if (isWindows) {
+        showWhatsNew(context); // show notification in case of a minor release i.e. 1.1.0 -> 1.2.0
+    }
 
-	const channel = vscode.window.createOutputChannel("PostScript-Preview");
+    const channel = vscode.window.createOutputChannel("PostScript-Preview");
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand(
-		"postscript-preview.sidePreview",
-		() => {
-			// Get the EPS content
-			const document = vscode.window.activeTextEditor?.document;
+    // The command has been defined in the package.json file
+    // Now provide the implementation of the command with registerCommand
+    // The commandId parameter must match the command field in package.json
+    const disposable = vscode.commands.registerCommand(
+        "postscript-preview.sidePreview",
+        () => {
+            // Get the EPS content
+            const document = vscode.window.activeTextEditor?.document;
 
-			if (!document) {
-				// No active document
-				console.log("No active document. Do nothing.");
-				return;
-			}
+            if (!document) {
+                // No active document
+                console.log("No active document. Do nothing.");
+                return;
+            }
 
-			const filename = path.basename(document.fileName);
-			const filePath = document.uri.fsPath;
+            const filename = path.basename(document.fileName);
+            const filePath = document.uri.fsPath;
 
-			// Create new panel
-			const panel = vscode.window.createWebviewPanel(
-				"",
-				`PostScript Preview - ${filename}`,
-				vscode.ViewColumn.Beside,
-				{
-					enableScripts: true,
-				},
-			);
+            // Create new panel
+            const panel = vscode.window.createWebviewPanel(
+                "",
+                `PostScript Preview - ${filename}`,
+                vscode.ViewColumn.Beside,
+                {
+                    enableScripts: true,
+                }
+            );
 
-			const mainFilePath = document.fileName;
+            const mainFilePath = document.fileName;
 
-			generatePreview(mainFilePath, panel);
-			channel.appendLine(`Watching ${filePath}`);
-			const watcher = vscode.workspace.createFileSystemWatcher(filePath);
-			watcher.onDidChange((_: vscode.Uri) => {
-				channel.appendLine(`File changed, regenerating : ${filePath}`);
-				generatePreview(mainFilePath, panel);
-			});
-			panel.onDidDispose(() => {
-				watcher.dispose();
-				channel.appendLine(`Stop watching ${filePath}`);
-			});
-		},
-	);
+            generatePreview(mainFilePath, panel, channel);
+            channel.appendLine(`Watching ${filePath}`);
 
-	context.subscriptions.push(disposable);
+            // Handle messages from webview for page navigation
+            panel.webview.onDidReceiveMessage(
+                (message) => {
+                    const state = (panel as any).__previewState as
+                        | PreviewState
+                        | undefined;
+                    if (!state) {
+                        return;
+                    }
+
+                    switch (message.command) {
+                        case "prevPage":
+                            if (state.currentPage > 1) {
+                                state.currentPage--;
+                                generatePreview(
+                                    state.filepath,
+                                    panel,
+                                    channel,
+                                    state.currentPage,
+                                    state.pdfPath
+                                );
+                            }
+                            break;
+                        case "nextPage":
+                            if (state.currentPage < state.totalPages) {
+                                state.currentPage++;
+                                generatePreview(
+                                    state.filepath,
+                                    panel,
+                                    channel,
+                                    state.currentPage,
+                                    state.pdfPath
+                                );
+                            }
+                            break;
+                        case "goToPage":
+                            // biome-ignore lint/correctness/noSwitchDeclarations: <explanation>
+                            const page = parseInt(message.page, 10);
+                            if (page >= 1 && page <= state.totalPages) {
+                                state.currentPage = page;
+                                generatePreview(
+                                    state.filepath,
+                                    panel,
+                                    channel,
+                                    state.currentPage,
+                                    state.pdfPath
+                                );
+                            }
+                            break;
+                    }
+                },
+                undefined,
+                context.subscriptions
+            );
+
+            const watcher = vscode.workspace.createFileSystemWatcher(filePath);
+            watcher.onDidChange((_: vscode.Uri) => {
+                channel.appendLine(`File changed, regenerating : ${filePath}`);
+                // Reset to page 1 on file change and regenerate PDF
+                generatePreview(mainFilePath, panel, channel);
+            });
+            panel.onDidDispose(() => {
+                watcher.dispose();
+                channel.appendLine(`Stop watching ${filePath}`);
+            });
+        }
+    );
+
+    context.subscriptions.push(disposable);
 }
 
 // https://stackoverflow.com/a/66303259/3073272
 function isMajorUpdate(previousVersion: string, currentVersion: string) {
-	// rain-check for malformed string
-	if (previousVersion.indexOf(".") === -1) {
-		return true;
-	}
-	//returns int array [1,1,1] i.e. [major,minor,patch]
-	const previousVerArr = previousVersion.split(".").map(Number);
-	const currentVerArr = currentVersion.split(".").map(Number);
+    // rain-check for malformed string
+    if (previousVersion.indexOf(".") === -1) {
+        return true;
+    }
+    //returns int array [1,1,1] i.e. [major,minor,patch]
+    const previousVerArr = previousVersion.split(".").map(Number);
+    const currentVerArr = currentVersion.split(".").map(Number);
 
-	// For pdftocairo bug fix
-	if (
-		currentVerArr[1] > previousVerArr[1] ||
-		currentVerArr[2] > previousVerArr[2]
-	) {
-		return true;
-	}
-	return false;
+    // For pdftocairo bug fix
+    if (
+        currentVerArr[1] > previousVerArr[1] ||
+        currentVerArr[2] > previousVerArr[2]
+    ) {
+        return true;
+    }
+    return false;
 }
 
 async function showWhatsNew(context: ExtensionContext) {
-	const previousVersion = context.globalState.get<string>(extensionId);
-	const currentVersion =
-		extensions.getExtension(extensionId)?.packageJSON.version;
+    const previousVersion = context.globalState.get<string>(extensionId);
+    const currentVersion =
+        extensions.getExtension(extensionId)?.packageJSON.version;
 
-	// store latest version
-	context.globalState.update(extensionId, currentVersion);
+    // store latest version
+    context.globalState.update(extensionId, currentVersion);
 
-	if (
-		previousVersion === undefined ||
-		isMajorUpdate(previousVersion, currentVersion)
-	) {
-		// show whats new notification:
-		const actions = [{ title: "See Requirements" }];
+    if (
+        previousVersion === undefined ||
+        isMajorUpdate(previousVersion, currentVersion)
+    ) {
+        // show whats new notification:
+        const actions = [{ title: "See Requirements" }];
 
-		const result = await window.showInformationMessage(
-			`PostScript Preview v${currentVersion} — READ NEW REQUIREMENTS!`,
-			...actions,
-		);
+        const result = await window.showInformationMessage(
+            `PostScript Preview v${currentVersion} — READ NEW REQUIREMENTS!`,
+            ...actions
+        );
 
-		if (result !== null) {
-			if (result === actions[0]) {
-				await env.openExternal(
-					Uri.parse("https://github.com/ahnafnafee/PostScript-Preview#windows"),
-				);
-			}
-		}
-	}
+        if (result !== null) {
+            if (result === actions[0]) {
+                await env.openExternal(
+                    Uri.parse(
+                        "https://github.com/ahnafnafee/PostScript-Preview#windows"
+                    )
+                );
+            }
+        }
+    }
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-function getWebviewContent(fileName: any, svgContent: any) {
-	return `
+function getWebviewContent(
+    fileName: any,
+    svgContent: any,
+    currentPage: number = 1,
+    totalPages: number = 1
+) {
+    const showNavigation = totalPages > 1;
+    const navigationHtml = showNavigation
+        ? `
+  <div class="page-navigation">
+    <button id="prev-page" class="nav-btn" ${
+        currentPage <= 1 ? "disabled" : ""
+    }>◀ Prev</button>
+    <span class="page-info">
+      <input type="number" id="page-input" value="${currentPage}" min="1" max="${totalPages}" />
+      <span>/ ${totalPages}</span>
+    </span>
+    <button id="next-page" class="nav-btn" ${
+        currentPage >= totalPages ? "disabled" : ""
+    }>Next ▶</button>
+  </div>
+  `
+        : "";
+
+    const navigationStyles = showNavigation
+        ? `
+    .page-navigation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 8px 16px;
+      background: rgba(32, 154, 142, 0.1);
+      border-radius: 8px;
+      border: 1px solid #209a8e;
+    }
+
+    .nav-btn {
+      background-color: #209a8e;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background-color: #1a7d73;
+    }
+
+    .nav-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    #page-input {
+      width: 50px;
+      text-align: center;
+      padding: 4px 8px;
+      border: 1px solid #209a8e;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    #page-input:focus {
+      outline: none;
+      border-color: #1a7d73;
+      box-shadow: 0 0 0 2px rgba(32, 154, 142, 0.2);
+    }
+  `
+        : "";
+
+    const navigationScript = showNavigation
+        ? `
+    const vscode = acquireVsCodeApi();
+    
+    document.getElementById('prev-page').addEventListener('click', () => {
+      vscode.postMessage({ command: 'prevPage' });
+    });
+    
+    document.getElementById('next-page').addEventListener('click', () => {
+      vscode.postMessage({ command: 'nextPage' });
+    });
+    
+    document.getElementById('page-input').addEventListener('change', (e) => {
+      vscode.postMessage({ command: 'goToPage', page: e.target.value });
+    });
+    
+    document.getElementById('page-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        vscode.postMessage({ command: 'goToPage', page: e.target.value });
+      }
+    });
+  `
+        : "";
+
+    return `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -336,12 +596,16 @@ function getWebviewContent(fileName: any, svgContent: any) {
       height: 30px;
       width: 40px;
     }
+    
+    ${navigationStyles}
   </style>
   <title>PostScript Preview</title>
 </head>
 
 <body>
   <h2>${fileName}</h2>
+
+  ${navigationHtml}
 
   <div class="pickr-container">
     <div class="pickr"></div>
@@ -373,6 +637,8 @@ function getWebviewContent(fileName: any, svgContent: any) {
     </main>
   </div>
   <script>
+    ${navigationScript}
+    
     const inputElement = document.querySelector('.pickr');
     // Simple example, see optional options for more configuration.
     const pickr = Pickr.create({

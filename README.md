@@ -87,6 +87,37 @@ C:\ProgramData\chocolatey\lib\poppler\tools
 
 _Please verify that you can view files in the above folders. If the folders do not exist, you might have run into issues with your installation. It's good to close Logitech GHUB and Logitech GHUB Updater when you install these as they might interfere with the process._
 
+## Configuration
+
+You can configure custom paths for the required executables in VS Code settings. This is useful if you have these tools installed in a non-standard location (e.g., a conda environment).
+
+Open VS Code settings and search for `postscript-preview`, or add these to your `settings.json`:
+
+```json
+{
+    "postscript-preview.path.ps2pdf": "/path/to/ps2pdf",
+    "postscript-preview.path.pdftocairo": "/path/to/pdftocairo",
+    "postscript-preview.path.pdfinfo": "/path/to/pdfinfo"
+}
+```
+
+## Multi-Page Documents
+
+When previewing a PostScript document with multiple pages (multiple `showpage` commands), navigation controls will automatically appear:
+
+-   **Previous/Next buttons**: Navigate between pages
+-   **Page input field**: Jump directly to a specific page
+
+The page resets to 1 whenever the source file is modified.
+
+## Console Output
+
+PostScript console output (from the `==` operator, `print`, and other output commands) is displayed in the VS Code Output panel:
+
+1. Open the Output panel (View → Output or `Ctrl+Shift+U`)
+2. Select "PostScript-Preview" from the dropdown
+3. Output will appear whenever you preview a file
+
 ## Known Issues
 
 None yet. If you run into issues, please report them here: <https://github.com/ahnafnafee/PostScript-Preview/issues>

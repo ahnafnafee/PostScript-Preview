@@ -2,7 +2,7 @@
 	"name": "postscript-preview",
 	"displayName": "PostScript Preview",
 	"description": "PostScript Preview is an extension that helps to preview EPS and PS files in Visual Studio Code.",
-	"version": "0.4.5",
+	"version": "0.5.0",
 	"icon": "images/logo.png",
 	"publisher": "ahnafnafee",
 	"engines": {
@@ -39,6 +39,26 @@
 					"group": "navigation"
 				}
 			]
+		},
+		"configuration": {
+			"title": "PostScript Preview",
+			"properties": {
+				"postscript-preview.path.ps2pdf": {
+					"type": "string",
+					"default": "ps2pdf",
+					"description": "Path to ps2pdf executable (from GhostScript). Use this if ps2pdf is not in your system PATH."
+				},
+				"postscript-preview.path.pdftocairo": {
+					"type": "string",
+					"default": "pdftocairo",
+					"description": "Path to pdftocairo executable (from Poppler). Use this if pdftocairo is not in your system PATH."
+				},
+				"postscript-preview.path.pdfinfo": {
+					"type": "string",
+					"default": "pdfinfo",
+					"description": "Path to pdfinfo executable (from Poppler). Used for detecting page count in multi-page documents."
+				}
+			}
 		}
 	},
 	"scripts": {
