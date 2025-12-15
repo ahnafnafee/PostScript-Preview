@@ -99,11 +99,13 @@ jobs:
                   draft: false
                   files: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
             - name: Publish to Open VSX Registry
+              if: env.OVSX_EXISTS == 'false'
               uses: HaaLeo/publish-vscode-extension@v1
               with:
                   pat: ${{ secrets.OPEN_VSX_TOKEN }}
                   extensionFile: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
             - name: Publish to Visual Studio Marketplace
+              if: env.VS_EXISTS == 'false'
               uses: HaaLeo/publish-vscode-extension@v1
               with:
                   pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
