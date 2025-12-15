@@ -26,9 +26,50 @@ jobs:
             - name: Get NPM Version
               id: package-version
               uses: martinbeentjes/npm-get-version-action@v1.3.1
+            - name: Check if version exists
+              id: check-version
+              env:
+                  VERSION: ${{ steps.package-version.outputs.current-version }}
+              run: |
+                  echo "Checking version $VERSION..."
+                  
+                  # Check VS Marketplace
+                  VS_Response=$(curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" \
+                    -d "{\"filters\":[{\"criteria\":[{\"filterType\":7,\"value\":\"ahnafnafee.postscript-preview\"}]}],\"flags\":256}" \
+                    https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery)
+                  
+                  # Check if version exists in the response
+                  if echo "$VS_Response" | grep -q "\"version\":\"$VERSION\""; then
+                    echo "Version $VERSION already exists in VS Marketplace."
+                    echo "VS_EXISTS=true" >> $GITHUB_ENV
+                  else
+                    echo "Version $VERSION not found in VS Marketplace."
+                    echo "VS_EXISTS=false" >> $GITHUB_ENV
+                  fi
+
+                  # Check Open VSX
+                  OVSX_Status=$(curl -o /dev/null -s -w "%{http_code}" https://open-vsx.org/api/ahnafnafee/postscript-preview/$VERSION)
+                  
+                  if [ "$OVSX_Status" = "200" ]; then
+                    echo "Version $VERSION already exists in Open VSX."
+                    echo "OVSX_EXISTS=true" >> $GITHUB_ENV
+                  else
+                    echo "Version $VERSION not found in Open VSX."
+                    echo "OVSX_EXISTS=false" >> $GITHUB_ENV
+                  fi
+
+            - name: Validate Version Status
+              run: |
+                  if [ "$VS_EXISTS" = "true" ] && [ "$OVSX_EXISTS" = "true" ]; then
+                    echo "::warning::Version $VERSION is already published to both VS Marketplace and Open VSX. Skipping publish."
+                    echo "Please bump the version in package.json to release a new version."
+                  fi
+
             - name: Build extension
+              if: env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false'
               run: vsce package -o postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
             - name: Upload a Build Artifact
+              if: env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false'
               uses: actions/upload-artifact@v4
               with:
                   name: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
@@ -36,7 +77,7 @@ jobs:
                   if-no-files-found: error
             - name: Create release with artifact
               if: ${{ success() && steps.package-version.outputs.current-version }}
-              uses: softprops/action-gh-release@v2
+              uses: softprops/action-gh-release@v2.4.2
               env:
                   GITHUB_TOKEN: ${{ secrets.github_token }}
               with:
