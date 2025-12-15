@@ -2,7 +2,7 @@ name: Build & Publish Extension
 
 on:
     push:
-        branches: ["master"]
+        branches: ["main", "master"]
 
 jobs:
     build:
@@ -11,16 +11,16 @@ jobs:
         timeout-minutes: 10
         steps:
             - uses: actions/checkout@v4
-            - name: Use Node.js 20
+            - name: Use Node.js 22
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
-                  cache: "npm"
+                  node-version: 22
+                  cache: "yarn"
                   registry-url: https://registry.npmjs.org/
             - name: Install dependencies
               run: |
                   npm install -g @vscode/vsce
-                  npm ci
+                  yarn install --frozen-lockfile
             - name: Get NPM Version
               id: package-version
               uses: martinbeentjes/npm-get-version-action@v1.3.1
@@ -34,7 +34,7 @@ jobs:
                   if-no-files-found: error
             - name: Create release with artifact
               if: ${{ success() && steps.package-version.outputs.current-version }}
-              uses: softprops/action-gh-release@v1
+              uses: softprops/action-gh-release@v2
               env:
                   GITHUB_TOKEN: ${{ secrets.github_token }}
               with:
