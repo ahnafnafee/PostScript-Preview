@@ -26,6 +26,8 @@ jobs:
             - name: Get NPM Version
               id: package-version
               uses: martinbeentjes/npm-get-version-action@v1.3.1
+            - name: Run Tests
+              run: xvfb-run -a yarn test
             - name: Check if version exists
               id: check-version
               env:
