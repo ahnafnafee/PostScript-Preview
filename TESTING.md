@@ -24,12 +24,13 @@ pdfinfo --help
 1. Install dependencies:
 
     ```bash
-    npm install
+    yarn install
     ```
 
 2. Compile TypeScript:
+
     ```bash
-    npm run compile
+    yarn compile
     ```
 
 ## Running the Extension
@@ -47,7 +48,7 @@ pdfinfo --help
 For continuous development with auto-compilation:
 
 ```bash
-npm run watch
+yarn watch
 ```
 
 Then press `F5` to launch the Extension Development Host.
@@ -103,7 +104,7 @@ Test files are located in `test_eps/`:
 ## Running Tests
 
 ```bash
-npm run test
+yarn test
 ```
 
 ## Packaging

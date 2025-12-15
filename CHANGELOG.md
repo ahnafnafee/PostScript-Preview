@@ -1,12 +1,21 @@
 # Change Log
 
-## [0.5.0] - 2025-12-15
+## [0.5.0] - 2024-12-15
 
 ### New Features
 
--   **Custom Executable Paths**: Added configuration settings for `ps2pdf`, `pdftocairo`, and `pdfinfo` paths. Useful for environments where these tools are not in the system PATH (e.g., conda environments). Configure via VS Code settings under `postscript-preview.path.*`.
--   **Multi-Page Navigation**: Added support for navigating through multi-page PostScript documents. When viewing a document with multiple `showpage` commands, navigation controls (Previous/Next buttons and page input) will appear.
--   **GhostScript Console Output**: PostScript console output (from the `==` operator and other print statements) is now displayed in the VS Code Output panel under "PostScript-Preview".
+-   **Custom Executable Paths**: Configure paths to `ps2pdf`, `pdftocairo`, and `pdfinfo` in VS Code settings. Useful for conda environments or non-standard installations.
+-   **Multi-Page Navigation**: Navigate through multi-page PostScript documents with Prev/Next buttons and page input.
+-   **GhostScript Console Output**: View output from `==`, `print`, and other operators in the VS Code Output panel.
+-   **Theme Support**: Automatic light/dark mode matching VS Code theme.
+
+### Improvements
+
+-   Refactored codebase into modular components for easier maintenance
+-   Simplified webview with cleaner UI and removed Bootstrap dependency
+-   Updated ESLint configuration for modern TypeScript
+-   Added TESTING.md for local development instructions
+-   Improved README with better documentation and SEO
 
 ## [0.4.4] - 2024-09-23
 

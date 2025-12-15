@@ -1,355 +1,11 @@
 /**
  * Webview content generation for PostScript Preview
+ * Uses VS Code theme variables for automatic light/dark mode support
  */
-
-/**
- * Generate navigation HTML for multi-page documents
- */
-function getNavigationHtml(currentPage: number, totalPages: number): string {
-    if (totalPages <= 1) {
-        return "";
-    }
-
-    return `
-  <div class="page-navigation">
-    <button id="prev-page" class="nav-btn" ${
-        currentPage <= 1 ? "disabled" : ""
-    }>Prev</button>
-    <span class="page-info">
-      <input type="number" id="page-input" value="${currentPage}" min="1" max="${totalPages}" />
-      <span>/ ${totalPages}</span>
-    </span>
-    <button id="next-page" class="nav-btn" ${
-        currentPage >= totalPages ? "disabled" : ""
-    }>Next</button>
-  </div>
-  `;
-}
-
-/**
- * Generate navigation CSS styles
- */
-function getNavigationStyles(showNavigation: boolean): string {
-    if (!showNavigation) {
-        return "";
-    }
-
-    return `
-    .page-navigation {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .nav-btn {
-      background-color: white;
-      color: #209a8e;
-      border: 2px solid #209a8e;
-      padding: 4px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.875rem;
-      transition: all 0.2s;
-    }
-
-    .nav-btn:hover:not(:disabled) {
-      background-color: #209a8e;
-      color: white;
-    }
-
-    .nav-btn:disabled {
-      background-color: #f0f0f0;
-      color: #999;
-      border-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    .page-info {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-weight: 600;
-      font-size: 0.875rem;
-    }
-
-    #page-input {
-      width: 40px;
-      text-align: center;
-      padding: 4px 6px;
-      border: 2px solid #209a8e;
-      border-radius: 4px;
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-
-    #page-input:focus {
-      outline: none;
-      border-color: #1a7d73;
-    }
-  `;
-}
-
-/**
- * Generate navigation JavaScript
- */
-function getNavigationScript(showNavigation: boolean): string {
-    if (!showNavigation) {
-        return "";
-    }
-
-    return `
-    const vscode = acquireVsCodeApi();
-    
-    document.getElementById('prev-page').addEventListener('click', () => {
-      vscode.postMessage({ command: 'prevPage' });
-    });
-    
-    document.getElementById('next-page').addEventListener('click', () => {
-      vscode.postMessage({ command: 'nextPage' });
-    });
-    
-    document.getElementById('page-input').addEventListener('change', (e) => {
-      vscode.postMessage({ command: 'goToPage', page: e.target.value });
-    });
-    
-    document.getElementById('page-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        vscode.postMessage({ command: 'goToPage', page: e.target.value });
-      }
-    });
-  `;
-}
-
-/**
- * Get base CSS styles for the webview
- */
-function getBaseStyles(): string {
-    return `
-    body {
-      margin-top: 2%;
-      padding: 2% 0%;
-    }
-
-    h2 {
-      font-size: 1.2em;
-      margin-left: 10%;
-      border: 1px solid black;
-      width: max-content;
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-bottom: 2%;
-    }
-
-    .main-main-container {
-      margin: 3% 2% !important;
-      position: relative;
-    }
-
-    .main-container {
-      margin: 0 auto;
-      max-width: max-content;
-      border-radius: 8px;
-      position: relative;
-      border: 1px solid black;
-      overflow: clip;
-      position: relative;
-    }
-
-    .main-control-container {
-      position: -webkit-sticky;
-      position: sticky;
-      top: 0;
-      float: right;
-      width: 0;
-      height: max-content;
-      scroll-behavior: smooth;
-      padding-top: 1em;
-      padding-right: 2.5em;
-      z-index: 2;
-    }
-
-    .main-content {
-      top: 0;
-      right: 0;
-      white-space: nowrap;
-    }
-
-    svg {
-      width: inherit;
-      height: inherit;
-    }
-
-    .btn-controls {
-      margin: 0 auto;
-      margin-bottom: 2px;
-    }
-
-    .control-btn {
-      background-color: #209a8e !important;
-      border-color: #209a8e !important;
-      font-weight: bold;
-    }
-
-    .control-btn:hover,
-    .control-btn:active,
-    .control-btn:visited {
-      background-color: #209a8e !important;
-      border-color: #209a8e !important;
-    }
-
-    .reset-btn {
-      background-color: white !important;
-      color: #209a8e !important;
-      border: 2px solid #209a8e !important;
-      font-weight: 600;
-    }
-
-    .reset-btn:hover,
-    .reset-btn:active,
-    .reset-btn:visited {
-      background-color: #209a8e !important;
-      color: white !important;
-      border-color: #209a8e !important;
-    }
-
-    #reset {
-      width: 56px;
-      height: auto;
-      text-align: center;
-    }
-
-    #hider {
-      border: 0.16em solid #209a8e !important;
-    }
-
-    .pickr .pcr-button.clear {
-      background: white;
-    }
-
-    .pickr-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-right: 10% !important;
-      float: right;
-      position: absolute;
-      justify-content: flex-end;
-      padding: 2% 0%;
-      right: 0;
-      top: 2%;
-      width: max-content;
-      height: max-content;
-    }
-
-    div>.pickr {
-      background: #000;
-      color: white;
-      border: 1px solid black;
-      top: 0;
-      margin: 0;
-      padding: 0;
-      cursor: pointer;
-      border-radius: 4px;
-      height: 30px;
-      width: 40px;
-    }
-  `;
-}
-
-/**
- * Get color picker and zoom control scripts
- */
-function getControlScripts(): string {
-    return `
-    const inputElement = document.querySelector('.pickr');
-    // Simple example, see optional options for more configuration.
-    const pickr = Pickr.create({
-      el: inputElement,
-      useAsButton: true,
-      default: '#1EBFAF',
-      defaultRepresentation: 'HEX',
-      theme: 'nano', // or 'monolith', or 'nano'
-      swatches: [
-        'rgba(244, 67, 54, 1)',
-        'rgba(233, 30, 99, 1)',
-        'rgba(156, 39, 176, 1)',
-        'rgba(103, 58, 183, 1)',
-        'rgba(63, 81, 181, 1)',
-        'rgba(33, 150, 243, 1)',
-        'rgba(3, 169, 244, 1)',
-      ],
-      components: {
-        // Main components
-        preview: true,
-        opacity: true,
-        hue: true,
-        // Input / output Options
-        interaction: {
-          hex: true,
-          rgba: true,
-          input: true,
-          clear: true,
-          save: true
-        }
-      }
-    }).on('init', pickr => {
-      inputElement.style.background = pickr.getSelectedColor().toHEXA().toString();
-    }).on('save', color => {
-      pickr.hide();
-      document.getElementById("container").style.background = color.toHEXA().toString();
-      inputElement.style.background = pickr.getSelectedColor().toHEXA().toString();
-    });
-    const svgElem = document.getElementsByTagName("svg")[0];
-    // SVG Pan Zoom
-    window.onload = function() {
-      const panZoom = svgPanZoom(svgElem, {
-        zoomEnabled: true,
-        controlIconsEnabled: false
-      });
-      document.getElementById("zoom-out").addEventListener("click", function(ev) {
-        ev.preventDefault();
-        panZoom.zoomIn();
-      });
-      document.getElementById("zoom-in").addEventListener("click", function(ev) {
-        ev.preventDefault();
-        panZoom.zoomOut();
-      });
-      document.getElementById("reset").addEventListener("click", function(ev) {
-        ev.preventDefault();
-        panZoom.resetZoom();
-        panZoom.resetPan();
-      });
-    };
-    const controlDiv = document.querySelector(".control-container");
-    const hideToggle = document.querySelector("#hider");
-    controlDiv.style.visibility = "visible";
-
-    function hideControls() {
-      if (controlDiv.style.visibility === "visible") {
-        controlDiv.style.visibility = "hidden";
-        hideToggle.textContent = "Show Controls";
-      } else {
-        controlDiv.style.visibility = "visible";
-        hideToggle.textContent = "Hide Controls";
-      }
-    }
-    var rect = svgElem.getBoundingClientRect();
-    const mainContainer = document.querySelector(".main-container");
-    console.log(mainContainer);
-    // mainContainer.style.maxWidth = rect.width + "pt";
-    // mainContainer.style.maxHeight = rect.height + "pt";
-    console.log(mainContainer.style.maxWidth);
-    console.log(mainContainer.style.maxHeight);
-    console.log(rect.width);
-    console.log(rect.height);
-  `;
-}
 
 /**
  * Generate complete webview HTML content
+ * Uses CSS variables from VS Code for theme support
  */
 // biome-ignore lint/suspicious/noExplicitAny: SVG content can be string or Buffer
 export function getWebviewContent(
@@ -358,75 +14,209 @@ export function getWebviewContent(
     currentPage: number = 1,
     totalPages: number = 1
 ): string {
-    const showNavigation = totalPages > 1;
-    const navigationHtml = getNavigationHtml(currentPage, totalPages);
-    const navigationStyles = getNavigationStyles(showNavigation);
-    const navigationScript = getNavigationScript(showNavigation);
-    const baseStyles = getBaseStyles();
-    const controlScripts = getControlScripts();
+    const showNav = totalPages > 1;
 
-    return `
-<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- One of the following themes -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css" /> <!-- 'nano' theme -->
-
-  <!-- Modern or es5 bundle -->
+  <title>PostScript Preview</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.5.0/dist/svg-pan-zoom.min.js"></script>
   <style>
-    ${baseStyles}
-    ${navigationStyles}
+    :root {
+      --accent: #209a8e;
+      --accent-hover: #1a7d73;
+    }
+    
+    body {
+      margin: 0;
+      padding: 16px;
+      background: var(--vscode-editor-background);
+      color: var(--vscode-editor-foreground);
+      font-family: var(--vscode-font-family);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filename {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 4px 10px;
+      background: var(--vscode-badge-background);
+      color: var(--vscode-badge-foreground);
+      border-radius: 4px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    button {
+      background: var(--vscode-button-secondaryBackground);
+      color: var(--vscode-button-secondaryForeground);
+      border: 1px solid var(--vscode-button-border, transparent);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--vscode-button-secondaryHoverBackground);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .page-nav {
+      display: ${showNav ? "flex" : "none"};
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-nav input {
+      width: 36px;
+      text-align: center;
+      padding: 4px;
+      background: var(--vscode-input-background);
+      color: var(--vscode-input-foreground);
+      border: 1px solid var(--vscode-input-border, #444);
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .page-nav span {
+      font-size: 12px;
+    }
+
+    .preview-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .preview-box {
+      border: 1px solid var(--vscode-panel-border, #444);
+      border-radius: 6px;
+      overflow: hidden;
+      background: white;
+      position: relative;
+    }
+
+    .zoom-controls {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 10;
+    }
+
+    .zoom-controls button {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    svg { width: 100%; height: auto; display: block; }
+
+    .pickr-wrap {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--vscode-panel-border, #444);
+      background: #1EBFAF;
+    }
   </style>
-  <title>PostScript Preview</title>
 </head>
-
 <body>
-  <h2>${fileName}</h2>
-
-  ${navigationHtml}
-
-  <div class="pickr-container">
-    <div class="pickr"></div>
-  </div>
-
-  <div class="btn-controls d-flex justify-content-center">
-    <button id="hider" type="button" onclick="hideControls()" class="btn btn-outline-primary reset-btn btn-sm">Hide Controls</button>
-  </div>
-  <div class="main-main-container">
-    <main class="main-container">
-      <div class="main-control-container d-flex align-items-end justify-content-center">
-        <div class="control-container d-flex align-items-end flex-column justify-content-center">
-          <div class="btn-controls">
-            <button id="zoom-out" type="button" class="control-btn btn btn-primary btn-sm">+</button>
-          </div>
-          <div class="btn-controls">
-            <button id="reset" type="button" class="btn btn-outline-primary reset-btn btn-sm">Reset</button>
-          </div>
-          <div class="btn-controls">
-            <button id="zoom-in" type="button" class="control-btn btn btn-primary btn-sm">-</button>
-          </div>
-        </div>
+  <div class="header">
+    <span class="filename">${fileName}</span>
+    <div class="controls">
+      <div class="page-nav">
+        <button id="prev" ${currentPage <= 1 ? "disabled" : ""}>◀</button>
+        <input type="number" id="pageNum" value="${currentPage}" min="1" max="${totalPages}">
+        <span>/ ${totalPages}</span>
+        <button id="next" ${
+            currentPage >= totalPages ? "disabled" : ""
+        }>▶</button>
       </div>
-      <div id="container" class="main-content">
-        <?xml version="1.0" encoding="UTF-8"?>
-        ${svgContent}
-      </div>
-
-    </main>
+      <div class="pickr-wrap" id="colorPicker"></div>
+    </div>
   </div>
+  
+  <div class="preview-container">
+    <div class="preview-box" id="previewBox">
+      <div class="zoom-controls">
+        <button class="primary" id="zoomIn">+</button>
+        <button class="primary" id="zoomReset">↺</button>
+        <button class="primary" id="zoomOut">−</button>
+      </div>
+      <div id="svgContainer">${svgContent}</div>
+    </div>
+  </div>
+
   <script>
-    ${navigationScript}
-    ${controlScripts}
+    ${
+        showNav
+            ? `
+    const vscode = acquireVsCodeApi();
+    document.getElementById('prev').onclick = () => vscode.postMessage({command: 'prevPage'});
+    document.getElementById('next').onclick = () => vscode.postMessage({command: 'nextPage'});
+    document.getElementById('pageNum').onchange = e => vscode.postMessage({command: 'goToPage', page: e.target.value});
+    `
+            : ""
+    }
+
+    // Color picker
+    const pickr = Pickr.create({
+      el: '#colorPicker',
+      theme: 'nano',
+      default: '#FFFFFF',
+      swatches: ['#FFFFFF', '#000000', '#1EBFAF', '#F5F5F5', '#333333'],
+      components: { preview: true, opacity: false, hue: true, interaction: { input: true, save: true } }
+    }).on('save', (color) => {
+      document.getElementById('previewBox').style.background = color.toHEXA().toString();
+      pickr.hide();
+    });
+
+    // SVG Pan Zoom
+    const svg = document.querySelector('svg');
+    if (svg) {
+      const pz = svgPanZoom(svg, { zoomEnabled: true, controlIconsEnabled: false, fit: true, center: true });
+      document.getElementById('zoomIn').onclick = () => pz.zoomIn();
+      document.getElementById('zoomOut').onclick = () => pz.zoomOut();
+      document.getElementById('zoomReset').onclick = () => { pz.resetZoom(); pz.resetPan(); };
+    }
   </script>
 </body>
-
-</html>
-`;
+</html>`;
 }
