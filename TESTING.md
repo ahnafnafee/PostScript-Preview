@@ -55,30 +55,31 @@ Then press `F5` to launch the Extension Development Host.
 
 ## Test Files
 
-Test files are located in `test_eps/`:
+Test files are located in `examples/`:
 
-| File                | Purpose                                |
-| ------------------- | -------------------------------------- |
-| `test_01.ps`        | Basic single-page PostScript           |
-| `test_02.ps`        | PostScript with shapes                 |
-| `multipage_test.ps` | 3-page document for testing navigation |
+| File               | Purpose                                |
+| ------------------ | -------------------------------------- |
+| `sample.eps`       | Sample EPS file                        |
+| `basic_shapes.ps`  | Basic single-page PostScript           |
+| `triangle_grid.ps` | PostScript with shapes and grid        |
+| `multipage.ps`     | 3-page document for testing navigation |
 
 ## Features to Test
 
 ### 1. Basic Preview
 
--   Open `test_eps/test_01.ps`
+-   Open `examples/basic_shapes.ps`
 -   Click preview icon → Preview should appear
 
 ### 2. Multi-Page Navigation
 
--   Open `test_eps/multipage_test.ps`
+-   Open `examples/multipage.ps`
 -   Verify Prev/Next buttons appear
 -   Test page navigation and direct page input
 
 ### 3. Console Output
 
--   Open `test_eps/multipage_test.ps`
+-   Open `examples/multipage.ps`
 -   Preview the file
 -   Open Output panel (`Ctrl+Shift+U`)
 -   Select "PostScript-Preview" → Should show GhostScript output
@@ -118,6 +119,45 @@ vsce package
 
 Install the generated `.vsix` file via:
 **Extensions → ⋯ → Install from VSIX...**
+
+## Publishing to VS Code Marketplace
+
+### Prerequisites
+
+1. Create a Personal Access Token (PAT) - see [official instructions](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token)
+
+2. Login to vsce:
+
+    ```bash
+    vsce login ahnafnafee
+    ```
+
+### Release Checklist
+
+Before publishing a new version:
+
+1. Update version in `package.json`
+2. Update `CHANGELOG.md` with new features/fixes
+3. Compile and test locally (`yarn compile` + `F5`)
+4. Build package to verify: `vsce package`
+
+### Publish
+
+```bash
+vsce publish
+```
+
+Or publish with a version bump:
+
+```bash
+vsce publish patch  # 0.5.0 → 0.5.1
+vsce publish minor  # 0.5.0 → 0.6.0
+vsce publish major  # 0.5.0 → 1.0.0
+```
+
+### View Published Extension
+
+https://marketplace.visualstudio.com/manage
 
 ## Debugging Tips
 
