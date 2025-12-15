@@ -5,118 +5,149 @@
 </p>
 
 <p align="center">
-    <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="Logo"  width="128px" height="auto" />
+    <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="PostScript Preview Logo" width="128px" height="auto" />
 </p>
 <p align="center">
     <br/>
-    <a title="READ REQUIREMENTS AFTER INSTALL" href="#requirements"><img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/docs/images/req-btn.png" alt="Read Requirements After Install"></a>
+    <a title="READ REQUIREMENTS AFTER INSTALL" href="#-requirements"><img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/docs/images/req-btn.png" alt="Read Requirements After Install"></a>
 </p>
 
-<h1 align="center">PostScript Preview</h1>
+<h1 align="center">PostScript Preview for VS Code</h1>
 
-> PostScript Preview is an extension that helps to **preview** EPS and PS files in [Visual Studio Code](https://code.visualstudio.com/). It supercharges how your view PostScript files by also allowing to **pan** and **zoom** the image. You can also change the preview background for extra **customizations**.
+> **A popular PostScript and EPS file previewer for Visual Studio Code** — Preview, pan, zoom, and debug your `.ps` and `.eps` files directly in VS Code. Supports multi-page documents, GhostScript console output, custom themes, and more.
 
-## Features
+## ✨ Features
 
-This extension enables the in-VSCode preview of EPS image files.
-A new command `postscript-preview.sidePreview` is added as well as a preview icon in the menu bar when EPS or PS files are open in VSCode.
+-   🖼️ **Live Preview** — View EPS and PS files side-by-side with your code
+-   🔍 **Pan & Zoom** — Smooth SVG-based pan and zoom controls
+-   📄 **Multi-Page Support** — Navigate through multi-page PostScript documents
+-   🎨 **Theme Support** — Automatic light/dark mode matching VS Code theme
+-   🖌️ **Background Color Picker** — Customize preview background color
+-   📝 **Console Output** — View GhostScript output (from `==`, `print`, etc.)
+-   ⚙️ **Custom Paths** — Configure paths to GhostScript and Poppler tools
+-   🔄 **Auto-Refresh** — Preview updates automatically when you save
 
-<img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/demo/postscript-preview-demo.gif" alt="demo" style="zoom:50%;" />
+<img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/demo/postscript-preview-demo.gif" alt="PostScript Preview Demo" style="zoom:50%;" />
 
-## Requirements
+## 🚀 Quick Start
 
-This extension depends on the `PostScript Language` extension to recognize EPS/PS file.
-You can install that [extension](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript) from the VSCode extension store.
+1. Install this extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview)
+2. Install [GhostScript](https://www.ghostscript.com/) and [Poppler](https://poppler.freedesktop.org/)
+3. Open any `.ps` or `.eps` file
+4. Click the preview icon in the editor title bar
 
-This extension also depends on two commands:
+## 📋 Requirements
 
--   `ps2pdf` - to first convert the EPS/PS file to PDF (the command is part of GhostScript)
--   `pdftocairo` - to convert the generated pdf to svg which is shown in the preview
+This extension requires:
 
-Thus you need to install these two commands first and ensure they are in the executable path.
+-   **[PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript)** extension for syntax highlighting
+-   **GhostScript** (provides `ps2pdf`)
+-   **Poppler** (provides `pdftocairo` and `pdfinfo`)
 
-### **macOS**
-
-You can install them via [homebrew](https://brew.sh/):
+### macOS
 
 ```bash
-brew install ghostscript
-brew install poppler
+brew install ghostscript poppler
 ```
 
-### **Ubuntu**
-
-You can install them using the following commands:
+### Ubuntu / Debian
 
 ```bash
-sudo apt-get install ghostscript -y
-sudo apt-get install poppler-utils -y
+sudo apt-get install ghostscript poppler-utils -y
 ```
 
-### **Windows**
+### Windows
 
-You need to have GhostScript installed in your system. You can install them via [Chocolatey](https://chocolatey.org/install). Run the following commands using an **Administrative PowerShell**.
+Install via [Chocolatey](https://chocolatey.org/install) (run as Administrator):
 
-Installs GhostScript for _ps2pdf_
-
-```bash
+```powershell
 choco install ghostscript --version 9.55.0 --force -y
-```
-
-Installs _pdftocairo_
-
-```bash
 choco install poppler --version 0.89.0 -y --force
 ```
 
-Adds the executables to the environment path
+Add to PATH:
 
-```bash
+```powershell
 [Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";C:\Program Files\gs\gs9.55.0\lib;C:\Program Files\gs\gs9.55.0\bin;C:\ProgramData\chocolatey\lib\poppler\tools",[EnvironmentVariableTarget]::Machine)
 ```
 
-**Now restart VSCode**. You should now be able to view the EPS/PS files in the preview.
+**Restart VS Code** after installation.
 
-If you are having issues setting the PATH, you can set it using the GUI instead as described [here](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/). The paths that need to be added are:
+<details>
+<summary>Manual PATH setup</summary>
 
-```bash
+If you have issues setting PATH, add these manually via System Properties → Environment Variables:
+
+```
 C:\Program Files\gs\gs9.55.0\lib
 C:\Program Files\gs\gs9.55.0\bin
 C:\ProgramData\chocolatey\lib\poppler\tools
 ```
 
-_Please verify that you can view files in the above folders. If the folders do not exist, you might have run into issues with your installation. It's good to close Logitech GHUB and Logitech GHUB Updater when you install these as they might interfere with the process._
+</details>
 
-## Known Issues
+## ⚙️ Configuration
 
-None yet. If you run into issues, please report them here: <https://github.com/ahnafnafee/PostScript-Preview/issues>
+Configure custom executable paths in VS Code settings (useful for conda environments or non-standard installations):
 
-You are also encouraged to open pull requests for additional features and fixes you want to add to this extension.
+| Setting                              | Description                   | Default      |
+| ------------------------------------ | ----------------------------- | ------------ |
+| `postscript-preview.path.ps2pdf`     | Path to ps2pdf executable     | `ps2pdf`     |
+| `postscript-preview.path.pdftocairo` | Path to pdftocairo executable | `pdftocairo` |
+| `postscript-preview.path.pdfinfo`    | Path to pdfinfo executable    | `pdfinfo`    |
 
-## Credits
+Example `settings.json`:
 
--   [mkvoya/eps-preview](https://github.com/mkvoya/eps-preview) for the original base extension
--   [bumbu/svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) for the SVG Pan Zoom library
--   [Simonwep/pickr](https://github.com/Simonwep/pickr) for the color picker library
-
-## Installing Locally (for Development Purposes)
-
-Install the VSCode Publishing Extension
-
-```bash
-npm install -g @vscode/vsce
+```json
+{
+    "postscript-preview.path.ps2pdf": "/opt/ghostscript/bin/ps2pdf",
+    "postscript-preview.path.pdftocairo": "/opt/poppler/bin/pdftocairo"
+}
 ```
 
-Package the extension:
+## 📄 Multi-Page Documents
+
+For PostScript files with multiple `showpage` commands, navigation controls appear automatically:
+
+-   **◀ / ▶** — Navigate between pages
+-   **Page input** — Jump to a specific page
+
+The preview resets to page 1 when the source file is modified.
+
+## 📝 Console Output
+
+View GhostScript output in VS Code:
+
+1. Open Output panel (`Ctrl+Shift+U` / `Cmd+Shift+U`)
+2. Select **"PostScript-Preview"** from the dropdown
+3. Output from `==`, `print`, and other operators will appear here
+
+## 🐛 Known Issues
+
+None currently. [Report issues here](https://github.com/ahnafnafee/PostScript-Preview/issues).
+
+## 🙏 Credits
+
+-   [mkvoya/eps-preview](https://github.com/mkvoya/eps-preview) — Original base extension
+-   [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) — Pan and zoom library
+-   [pickr](https://github.com/Simonwep/pickr) — Color picker library
+
+## 🛠️ Development
+
+See [TESTING.md](TESTING.md) for local development instructions.
 
 ```bash
-vsce package
+yarn install
+yarn compile
+# Press F5 in VS Code to launch Extension Development Host
 ```
 
-Publish the extension:
+## 📄 License
 
-```bash
-vsce publish
-```
+[MIT](LICENSE)
 
-See published extensions here: <https://marketplace.visualstudio.com/manage>
+---
+
+<p align="center">
+    <strong>⭐ If you find this extension useful, please star the repo and leave a review!</strong>
+</p>

@@ -8,12 +8,31 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
     "rules": {
-        "@typescript-eslint/class-name-casing": "warn",
-        "@typescript-eslint/semi": "warn",
+        "@typescript-eslint/naming-convention": [
+            "warn",
+            {
+                "selector": "class",
+                "format": [
+                    "PascalCase"
+                ]
+            }
+        ],
         "curly": "warn",
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
-        "semi": "off"
-    }
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-require-imports": "off",
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/no-empty-function": "off"
+    },
+    "ignorePatterns": [
+        "out",
+        "dist",
+        "**/*.d.ts"
+    ]
 }
