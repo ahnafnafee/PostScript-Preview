@@ -34,12 +34,25 @@ jobs:
                   echo "Checking version $VERSION..."
                   
                   # Check VS Marketplace
-                  VS_Response=$(curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" \
-                    -d "{\"filters\":[{\"criteria\":[{\"filterType\":7,\"value\":\"ahnafnafee.postscript-preview\"}]}],\"flags\":256}" \
-                    https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery)
+                  VS_Response=$(curl -s --location 'https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery' \
+                    --header 'Accept: application/json; api-version=7.2-preview.1' \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                        "filters": [
+                            {
+                                "criteria": [
+                                    {
+                                        "filterType": 7,
+                                        "value": "ahnafnafee.postscript-preview"
+                                    }
+                                ]
+                            }
+                        ],
+                        "flags": 915
+                    }')
                   
-                  # Check if version exists in the response
-                  if echo "$VS_Response" | grep -q "\"version\":\"$VERSION\""; then
+                  # Check if version exists (robust jq boolean)
+                  if echo "$VS_Response" | jq -e --arg v "$VERSION" '.results[0].extensions[0].versions | map(select(.version == $v)) | length > 0' > /dev/null; then
                     echo "Version $VERSION already exists in VS Marketplace."
                     echo "VS_EXISTS=true" >> $GITHUB_ENV
                   else
@@ -76,8 +89,8 @@ jobs:
                   path: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
                   if-no-files-found: error
             - name: Create release with artifact
-              if: ${{ success() && steps.package-version.outputs.current-version }}
-              uses: softprops/action-gh-release@v2.4.2
+              if: (env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false') && success()
+              uses: softprops/action-gh-release@v2.0.8
               env:
                   GITHUB_TOKEN: ${{ secrets.github_token }}
               with:
