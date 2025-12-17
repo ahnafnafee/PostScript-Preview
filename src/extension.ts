@@ -13,10 +13,17 @@ import { showWhatsNew } from "./whats-new";
  * Called when the extension is activated
  */
 export function activate(context: vscode.ExtensionContext): void {
+    console.log("PostScript Preview: Activating extension...");
     const isWindows = process.platform === "win32";
 
     if (isWindows) {
-        showWhatsNew(context); // show notification in case of a minor release
+        console.log("PostScript Preview: Checking for updates (Windows)...");
+        showWhatsNew(context).catch((error) => {
+            console.error(
+                "PostScript Preview: Failed to show whats new notification:",
+                error
+            );
+        });
     }
 
     const channel = vscode.window.createOutputChannel("PostScript-Preview");
@@ -120,6 +127,7 @@ export function activate(context: vscode.ExtensionContext): void {
     );
 
     context.subscriptions.push(disposable);
+    console.log("PostScript Preview: Activation complete. Command registered.");
 }
 
 /**

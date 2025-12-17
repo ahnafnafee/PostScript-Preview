@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.5.2] - 2025-12-17
+
+-   Fixed `Cannot find module 'path-scurry'` runtime error by downgrading `glob` dependency.
+-   Fixed "Command not found" error during extension activation on Windows (caused by `showWhatsNew` crash).
+
 ## [0.5.0] - 2025-12-15
 
 ### New Features

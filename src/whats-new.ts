@@ -36,8 +36,12 @@ function isMajorUpdate(
  */
 export async function showWhatsNew(context: ExtensionContext): Promise<void> {
     const previousVersion = context.globalState.get<string>(extensionId);
-    const currentVersion =
-        extensions.getExtension(extensionId)?.packageJSON.version;
+    const extension = extensions.getExtension(extensionId);
+    const currentVersion = extension?.packageJSON?.version;
+
+    if (!currentVersion) {
+        return;
+    }
 
     // store latest version
     context.globalState.update(extensionId, currentVersion);
