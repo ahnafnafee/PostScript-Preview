@@ -28,4 +28,20 @@ suite("Extension Test Suite", () => {
         const commands = await vscode.commands.getCommands(true);
         assert.ok(commands.includes("postscript-preview.sidePreview"));
     });
+
+    test("Preview command should execute without error", async () => {
+        // Ensure workspace is open
+        assert.ok(vscode.workspace.workspaceFolders, "No workspace is open");
+
+        const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
+        const filePath = vscode.Uri.file(
+            workspaceRoot + "/examples/basic_shapes.ps"
+        );
+
+        const doc = await vscode.workspace.openTextDocument(filePath);
+        await vscode.window.showTextDocument(doc);
+
+        // Execute the command - validation fails if this throws
+        await vscode.commands.executeCommand("postscript-preview.sidePreview");
+    });
 });
