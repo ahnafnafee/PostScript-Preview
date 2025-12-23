@@ -115,7 +115,7 @@ export function generatePreview(
                 const ps2pdfResult = spawnSync(
                     config.ps2pdf,
                     ["-dEPSCrop", filepath, pdfInfo.path],
-                    { encoding: "utf-8", shell: true }
+                    { encoding: "utf-8", shell: false }
                 );
 
                 // Display any console output from GhostScript

@@ -44,4 +44,20 @@ suite("Extension Test Suite", () => {
         // Execute the command - validation fails if this throws
         await vscode.commands.executeCommand("postscript-preview.sidePreview");
     });
+
+    test("Preview command should execute with special characters in filename", async () => {
+        // Ensure workspace is open
+        assert.ok(vscode.workspace.workspaceFolders, "No workspace is open");
+
+        const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
+        const filePath = vscode.Uri.file(
+            workspaceRoot + "/examples/test (example).ps"
+        );
+
+        const doc = await vscode.workspace.openTextDocument(filePath);
+        await vscode.window.showTextDocument(doc);
+
+        // Execute the command - validation fails if this throws
+        await vscode.commands.executeCommand("postscript-preview.sidePreview");
+    });
 });

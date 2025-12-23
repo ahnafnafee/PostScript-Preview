@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.5.4] - 2025-12-23
+
+-   Fixed an issue where previewing files with special characters in the filename (e.g., spaces, parentheses) would fail with a syntax error.
+
 ## [0.5.2] - 2025-12-17
 
 -   Fixed `Cannot find module 'path-scurry'` runtime error by downgrading `glob` dependency.
