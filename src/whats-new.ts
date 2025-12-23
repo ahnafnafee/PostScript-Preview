@@ -34,7 +34,7 @@ function isMajorUpdate(
 /**
  * Show "What's New" notification on version update
  */
-export async function showWhatsNew(context: ExtensionContext): Promise<void> {
+export function showWhatsNew(context: ExtensionContext): void {
     const previousVersion = context.globalState.get<string>(extensionId);
     const extension = extensions.getExtension(extensionId);
     const currentVersion = extension?.packageJSON?.version;
@@ -53,19 +53,19 @@ export async function showWhatsNew(context: ExtensionContext): Promise<void> {
         // show whats new notification:
         const actions = [{ title: "See Requirements" }];
 
-        const result = await window.showInformationMessage(
-            `PostScript Preview v${currentVersion} — READ NEW REQUIREMENTS!`,
-            ...actions
-        );
-
-        if (result !== null) {
-            if (result === actions[0]) {
-                await env.openExternal(
-                    Uri.parse(
-                        "https://github.com/ahnafnafee/PostScript-Preview#windows"
-                    )
-                );
-            }
-        }
+        window
+            .showInformationMessage(
+                `PostScript Preview v${currentVersion} — READ NEW REQUIREMENTS!`,
+                ...actions
+            )
+            .then((result) => {
+                if (result !== null && result === actions[0]) {
+                    env.openExternal(
+                        Uri.parse(
+                            "https://github.com/ahnafnafee/PostScript-Preview#windows"
+                        )
+                    );
+                }
+            });
     }
 }

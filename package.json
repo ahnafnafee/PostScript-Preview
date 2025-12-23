@@ -2,7 +2,7 @@
 	"name": "postscript-preview",
 	"displayName": "PostScript Preview",
 	"description": "PostScript Preview is an extension that helps to preview EPS and PS files in Visual Studio Code.",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"icon": "images/logo.png",
 	"publisher": "ahnafnafee",
 	"engines": {
@@ -72,7 +72,6 @@
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile",
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {

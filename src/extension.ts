@@ -18,12 +18,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     if (isWindows) {
         console.log("PostScript Preview: Checking for updates (Windows)...");
-        showWhatsNew(context).catch((error) => {
-            console.error(
-                "PostScript Preview: Failed to show whats new notification:",
-                error
-            );
-        });
+        showWhatsNew(context);
     }
 
     const channel = vscode.window.createOutputChannel("PostScript-Preview");

@@ -18,14 +18,14 @@
 
 ## ✨ Features
 
--   🖼️ **Live Preview** — View EPS and PS files side-by-side with your code
--   🔍 **Pan & Zoom** — Smooth SVG-based pan and zoom controls
--   📄 **Multi-Page Support** — Navigate through multi-page PostScript documents
--   🎨 **Theme Support** — Automatic light/dark mode matching VS Code theme
--   🖌️ **Background Color Picker** — Customize preview background color
--   📝 **Console Output** — View GhostScript output (from `==`, `print`, etc.)
--   ⚙️ **Custom Paths** — Configure paths to GhostScript and Poppler tools
--   🔄 **Auto-Refresh** — Preview updates automatically when you save
+-   **Live Preview** — View EPS and PS files side-by-side with your code
+-   **Pan & Zoom** — Smooth SVG-based pan and zoom controls
+-   **Multi-Page Support** — Navigate through multi-page PostScript documents
+-   **Theme Support** — Automatic light/dark mode matching VS Code theme
+-   **Background Color Picker** — Customize preview background color
+-   **Console Output** — View GhostScript output (from `==`, `print`, etc.)
+-   **Custom Paths** — Configure paths to GhostScript and Poppler tools
+-   **Auto-Refresh** — Preview updates automatically when you save
 
 <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/demo/postscript-preview-demo.gif" alt="PostScript Preview Demo" style="zoom:50%;" />
 
@@ -86,7 +86,7 @@ C:\ProgramData\chocolatey\lib\poppler\tools
 
 </details>
 
-## ⚙️ Configuration
+## Configuration
 
 Configure custom executable paths in VS Code settings (useful for conda environments or non-standard installations):
 
@@ -105,7 +105,7 @@ Example `settings.json`:
 }
 ```
 
-## 📄 Multi-Page Documents
+## Multi-Page Documents
 
 For PostScript files with multiple `showpage` commands, navigation controls appear automatically:
 
@@ -114,7 +114,7 @@ For PostScript files with multiple `showpage` commands, navigation controls appe
 
 The preview resets to page 1 when the source file is modified.
 
-## 📝 Console Output
+## Console Output
 
 View GhostScript output in VS Code:
 
@@ -122,17 +122,17 @@ View GhostScript output in VS Code:
 2. Select **"PostScript-Preview"** from the dropdown
 3. Output from `==`, `print`, and other operators will appear here
 
-## 🐛 Known Issues
+## Known Issues
 
 None currently. [Report issues here](https://github.com/ahnafnafee/PostScript-Preview/issues).
 
-## 🙏 Credits
+## Credits
 
 -   [mkvoya/eps-preview](https://github.com/mkvoya/eps-preview) — Original base extension
 -   [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) — Pan and zoom library
 -   [pickr](https://github.com/Simonwep/pickr) — Color picker library
 
-## 🛠️ Development
+## Development
 
 See [TESTING.md](TESTING.md) for local development instructions.
 
@@ -142,7 +142,7 @@ yarn compile
 # Press F5 in VS Code to launch Extension Development Host
 ```
 
-## 📄 License
+## License
 
 [MIT](LICENSE)
 
