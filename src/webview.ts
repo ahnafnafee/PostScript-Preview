@@ -13,6 +13,7 @@ export function getWebviewContent(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;">
     <title>PostScript Preview</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
@@ -22,6 +23,7 @@ export function getWebviewContent(
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
     <style>
+        /* ... existing styles ... */
         :root {
             --accent: #209a8e;
             --accent-hover: #1a7d73;
@@ -103,7 +105,6 @@ export function getWebviewContent(
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Ensure the container is positioned for absolute children if needed */
         }
 
         #svgContainer {
@@ -119,14 +120,12 @@ export function getWebviewContent(
             max-width: 100%;
             max-height: 100%;
             box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            /* Background applied dynamically */
         }
 
         .pickr-wrap {
             margin-left: 8px;
         }
         
-        /* Pickr overrides */
         .pickr .pcr-button {
             width: 20px !important;
             height: 20px !important;
@@ -181,7 +180,7 @@ export function getWebviewContent(
 
         function renderPage(num) {
             pdfDoc.getPage(num).then(function(page) {
-                const viewport = page.getViewport({scale: 1.0}); // scale 1.0 for SVG is fine, it means 72DPI usually
+                const viewport = page.getViewport({scale: 1.0}); 
                 
                 page.getOperatorList().then(function (opList) {
                     const svgGfx = new pdfjsLib.SVGGraphics(page.commonObjs, page.objs);
@@ -189,30 +188,45 @@ export function getWebviewContent(
                     svgGfx.getSVG(opList, viewport).then(function (svg) {
                         svgContainer.innerHTML = '';
                         
-                        // Fix Aspect Ratio & Sizing
-                        // 1. Ensure viewBox exists (pdf.js usually sets it)
+                        // 1. Aspect Ratio Safety
+                        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                        
                         if (!svg.getAttribute('viewBox')) {
                             svg.setAttribute('viewBox', \`0 0 \${viewport.width} \${viewport.height}\`);
                         }
-                        // 2. Remove fixed pixel dimensions if present to prevent squashing when forcing 100%
+
+                        // 2. Paper Background Strategy: Inject a Rect
+                        const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                        bgRect.setAttribute("x", "0");
+                        bgRect.setAttribute("y", "0");
+                        bgRect.setAttribute("width", viewport.width);
+                        bgRect.setAttribute("height", viewport.height);
+                        bgRect.setAttribute("fill", "white"); // Default Paper Color
+                        bgRect.setAttribute("id", "paper-bg");
+                        
+                        svg.insertBefore(bgRect, svg.firstChild);
+
+                        // 3. Sizing
                         svg.removeAttribute('width');
                         svg.removeAttribute('height');
-
-                        // 3. Set style for responsiveness BEFORE pan-zoom initialization
-                        // svg-pan-zoom needs the element to have some size or container to have size
+                        
                         svg.style.width = '100%';
                         svg.style.height = '100%';
                         svg.style.display = 'block';
+                        svg.style.backgroundColor = 'transparent'; 
 
-                        // 4. Check color picker state
-                        const savedColor = pcr ? pcr.getColor().toHEXA().toString() : '#FFFFFF';
-                        svg.style.backgroundColor = savedColor;
-                        
+                        // 4. Color Picker Restore
+                        if (pcr) {
+                            bgRect.setAttribute("fill", pcr.getColor().toHEXA().toString());
+                        }
+
                         svgContainer.appendChild(svg);
                         
-                        // Initialize Pan Zoom
-                        // Use a small timeout to let the DOM settle?
-                        setTimeout(() => initPanZoom(svg), 0);
+                        // 5. Initialize Pan Zoom safely
+                        // Use requestAnimationFrame to let the DOM update dimensions first
+                        window.requestAnimationFrame(() => {
+                            initPanZoom(svg);
+                        });
                     });
                 });
             });
@@ -223,6 +237,11 @@ export function getWebviewContent(
         }
 
         function initPanZoom(svgElement) {
+            if (typeof svgPanZoom === 'undefined') {
+                console.error("svg-pan-zoom library not loaded!");
+                return;
+            }
+
             if (panZoomInstance) {
                 panZoomInstance.destroy();
                 panZoomInstance = null;
@@ -230,16 +249,19 @@ export function getWebviewContent(
             
             if (!svgElement.id) svgElement.id = 'preview-svg';
             
-            // svg-pan-zoom options
-            panZoomInstance = svgPanZoom(svgElement, {
-                zoomEnabled: true,
-                controlIconsEnabled: false,
-                fit: true, 
-                center: true,
-                minZoom: 0.1,
-                maxZoom: 10,
-                contain: true // This helps fitting without squashing
-            });
+            try {
+                panZoomInstance = svgPanZoom(svgElement, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: false,
+                    fit: true, 
+                    center: true,
+                    minZoom: 0.1,
+                    maxZoom: 10,
+                    contain: true
+                });
+            } catch (e) {
+                console.error("PanZoom Initialization Failed:", e);
+            }
         }
 
         // --- Controls ---
@@ -259,7 +281,6 @@ export function getWebviewContent(
         });
 
         document.getElementById('zoomIn').addEventListener('click', () => {
-            // Check if instance exists, if not try to re-init (shouldn't happen)
             if (panZoomInstance) panZoomInstance.zoomIn();
         });
 
@@ -275,21 +296,19 @@ export function getWebviewContent(
         });
 
         // --- Coloring ---
-        // Defaults to White
         
         pcr = Pickr.create({
             el: '#colorPicker',
             theme: 'nano',
-            default: '#FFFFFF',
+            default: '#FFFFFF', // Paper Default
             swatches: ['#FFFFFF', '#000000', '#1EBFAF', '#525659', '#333333'],
             components: { preview: true, opacity: false, hue: true, interaction: { input: true, save: true } }
         }).on('save', (color) => {
             const hex = color.toHEXA().toString();
-            // Apply to active SVG
-            const svg = document.querySelector('svg');
-            if (svg) {
-                // svg-pan-zoom might warp things, but background on the SVG tag usually persists
-                svg.style.backgroundColor = hex;
+            // Apply to the paper-bg rect
+            const bgRect = document.getElementById('paper-bg');
+            if (bgRect) {
+                bgRect.setAttribute('fill', hex);
             }
             pcr.hide();
         });
