@@ -7,10 +7,6 @@
 <p align="center">
     <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="PostScript Preview Logo" width="128px" height="auto" />
 </p>
-<p align="center">
-    <br/>
-    <a title="READ REQUIREMENTS AFTER INSTALL" href="#-requirements"><img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/docs/images/req-btn.png" alt="Read Requirements After Install"></a>
-</p>
 
 <h1 align="center">PostScript Preview for VS Code</h1>
 
@@ -41,69 +37,14 @@
 This extension requires:
 
 -   **[PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript)** extension for syntax highlighting
--   **GhostScript** (provides `ps2pdf`)
--   **Poppler** (provides `pdftocairo` and `pdfinfo`)
 
-### macOS
-
-```bash
-brew install ghostscript poppler
-```
-
-### Ubuntu / Debian
-
-```bash
-sudo apt-get install ghostscript poppler-utils -y
-```
-
-### Windows
-
-Install via [Chocolatey](https://chocolatey.org/install) (run as Administrator):
-
-```powershell
-choco install ghostscript --version 9.55.0 --force -y
-choco install poppler --version 0.89.0 -y --force
-```
-
-Add to PATH:
-
-```powershell
-[Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";C:\Program Files\gs\gs9.55.0\lib;C:\Program Files\gs\gs9.55.0\bin;C:\ProgramData\chocolatey\lib\poppler\tools",[EnvironmentVariableTarget]::Machine)
-```
-
-**Restart VS Code** after installation.
-
-<details>
-<summary>Manual PATH setup</summary>
-
-If you have issues setting PATH, add these manually via System Properties → Environment Variables:
-
-```
-C:\Program Files\gs\gs9.55.0\lib
-C:\Program Files\gs\gs9.55.0\bin
-C:\ProgramData\chocolatey\lib\poppler\tools
-```
-
-</details>
+**Note:** Pre-0.6.0 versions required external installations of Ghostscript and Poppler. As of v0.6.0, these are **no longer required**! The extension now handles rendering internally using WebAssembly.
 
 ## Configuration
 
-Configure custom executable paths in VS Code settings (useful for conda environments or non-standard installations):
+The extension is zero-config!
 
-| Setting                              | Description                   | Default      |
-| ------------------------------------ | ----------------------------- | ------------ |
-| `postscript-preview.path.ps2pdf`     | Path to ps2pdf executable     | `ps2pdf`     |
-| `postscript-preview.path.pdftocairo` | Path to pdftocairo executable | `pdftocairo` |
-| `postscript-preview.path.pdfinfo`    | Path to pdfinfo executable    | `pdfinfo`    |
-
-Example `settings.json`:
-
-```json
-{
-    "postscript-preview.path.ps2pdf": "/opt/ghostscript/bin/ps2pdf",
-    "postscript-preview.path.pdftocairo": "/opt/poppler/bin/pdftocairo"
-}
-```
+Previous configuration settings (`postscript-preview.path.*`) have been deprecated and removed as they are no longer needed.
 
 ## Multi-Page Documents
 

@@ -7,7 +7,6 @@ import * as vscode from "vscode";
 import path = require("path");
 import { PreviewState } from "./types";
 import { generatePreview } from "./preview";
-import { showWhatsNew } from "./whats-new";
 
 /**
  * Called when the extension is activated
@@ -18,7 +17,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
     if (isWindows) {
         console.log("PostScript Preview: Checking for updates (Windows)...");
-        showWhatsNew(context);
     }
 
     const channel = vscode.window.createOutputChannel("PostScript-Preview");
@@ -49,63 +47,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
             const mainFilePath = document.fileName;
 
+            // Generate preview without awaiting (fire and forget)
             generatePreview(mainFilePath, panel, channel);
             channel.appendLine(`Watching ${filePath}`);
-
-            // Handle messages from webview for page navigation
-            panel.webview.onDidReceiveMessage(
-                (message) => {
-                    const state = (panel as any).__previewState as
-                        | PreviewState
-                        | undefined;
-                    if (!state) {
-                        return;
-                    }
-
-                    switch (message.command) {
-                        case "prevPage":
-                            if (state.currentPage > 1) {
-                                state.currentPage--;
-                                generatePreview(
-                                    state.filepath,
-                                    panel,
-                                    channel,
-                                    state.currentPage,
-                                    state.pdfPath
-                                );
-                            }
-                            break;
-                        case "nextPage":
-                            if (state.currentPage < state.totalPages) {
-                                state.currentPage++;
-                                generatePreview(
-                                    state.filepath,
-                                    panel,
-                                    channel,
-                                    state.currentPage,
-                                    state.pdfPath
-                                );
-                            }
-                            break;
-                        case "goToPage": {
-                            const page = parseInt(message.page, 10);
-                            if (page >= 1 && page <= state.totalPages) {
-                                state.currentPage = page;
-                                generatePreview(
-                                    state.filepath,
-                                    panel,
-                                    channel,
-                                    state.currentPage,
-                                    state.pdfPath
-                                );
-                            }
-                            break;
-                        }
-                    }
-                },
-                undefined,
-                context.subscriptions
-            );
 
             // Watch for file changes
             const watcher = vscode.workspace.createFileSystemWatcher(filePath);

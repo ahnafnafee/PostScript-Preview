@@ -1,17 +1,13 @@
 /**
- * Configuration management for PostScript Preview extension
+ * Configurations for PostScript Preview
  */
 import * as vscode from "vscode";
-import { ExtensionConfig } from "./types";
 
-/**
- * Get configuration values for executable paths
- */
-export function getConfig(): ExtensionConfig {
-    const config = vscode.workspace.getConfiguration("postscript-preview");
-    return {
-        ps2pdf: config.get<string>("path.ps2pdf", "ps2pdf"),
-        pdftocairo: config.get<string>("path.pdftocairo", "pdftocairo"),
-        pdfinfo: config.get<string>("path.pdfinfo", "pdfinfo"),
-    };
+export interface Config {
+    // No path configurations needed for internal rendering
+}
+
+export function getConfig(): Config {
+    // Return empty config or any future settings
+    return {};
 }

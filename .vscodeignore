@@ -21,6 +21,8 @@ demo/**
 .prettierignore
 .prettierrc
 .yarnrc
+.github/**
+.vscode-test/**
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 generateEmojiShortcodeMap.js
@@ -30,3 +32,9 @@ tsconfig.webviews.json
 tsconfig.tsbuildinfo
 webpack.config.js
 yarn.lock
+node_modules/pdfjs-dist/legacy/**
+node_modules/pdfjs-dist/types/**
+node_modules/pdfjs-dist/web/**
+src/test/**
+demo/**
+docs/**
