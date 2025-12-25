@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.6.0] - 2025-12-24
+
+### Major Changes
+
+-   **Internal Rendering**: Removed dependency on external tools (`Ghostscript`, `Poppler`, `pdfcairo`). The extension now renders PostScript files internally using WebAssembly (`postscript-wasm`) and `pdf.js`.
+-   **Zero Config**: Removed all path configuration settings. The extension works out of the box without any setup.
+
 ## [0.5.4] - 2025-12-23
 
 -   Fixed an issue where previewing files with special characters in the filename (e.g., spaces, parentheses) would fail with a syntax error.
