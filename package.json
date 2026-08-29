@@ -28,6 +28,9 @@
 	"activationEvents": [
 		"onLanguage:postscript"
 	],
+	"extensionDependencies": [
+		"mxschmitt.postscript"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
