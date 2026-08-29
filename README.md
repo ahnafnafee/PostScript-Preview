@@ -61,14 +61,17 @@ sudo apt-get install ghostscript poppler-utils -y
 Install via [Chocolatey](https://chocolatey.org/install) (run as Administrator):
 
 ```powershell
-choco install ghostscript --version 9.55.0 --force -y
+choco install ghostscript -y
 choco install poppler --version 0.89.0 -y --force
 ```
 
-Add to PATH:
+> **Why the Poppler pin?** Chocolatey `poppler` packages newer than `0.89.0` do not ship working Windows binaries (`25.x`+ contain only the source tarball, and the `22.11.x` builds are missing their dependency DLLs), so `0.89.0` is the newest version that works there. If you prefer a current Poppler, download a prebuilt release from [poppler-windows](https://github.com/oschwartz10612/poppler-windows/releases) instead, extract it, and point `postscript-preview.path.pdftocairo` / `postscript-preview.path.pdfinfo` at the executables in its `Library\bin` folder (see [Configuration](#configuration)).
+
+Add to PATH (auto-detects the installed GhostScript version):
 
 ```powershell
-[Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";C:\Program Files\gs\gs9.55.0\lib;C:\Program Files\gs\gs9.55.0\bin;C:\ProgramData\chocolatey\lib\poppler\tools",[EnvironmentVariableTarget]::Machine)
+$gs = (Get-ChildItem "C:\Program Files\gs\gs*\bin\gswin64c.exe" | Select-Object -Last 1).Directory.Parent.FullName
+[Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";$gs\lib;$gs\bin;C:\ProgramData\chocolatey\lib\poppler\tools",[EnvironmentVariableTarget]::Machine)
 ```
 
 **Restart VS Code** after installation.
@@ -76,11 +79,11 @@ Add to PATH:
 <details>
 <summary>Manual PATH setup</summary>
 
-If you have issues setting PATH, add these manually via System Properties → Environment Variables:
+If you have issues setting PATH, add these manually via System Properties → Environment Variables (substitute your installed GhostScript version, e.g. `gs10.07.1`):
 
 ```
-C:\Program Files\gs\gs9.55.0\lib
-C:\Program Files\gs\gs9.55.0\bin
+C:\Program Files\gs\gs<version>\lib
+C:\Program Files\gs\gs<version>\bin
 C:\ProgramData\chocolatey\lib\poppler\tools
 ```
 
