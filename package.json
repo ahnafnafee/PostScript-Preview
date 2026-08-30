@@ -78,14 +78,14 @@
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^12.20.55",
-		"@types/vscode": "1.46.0",
+		"@types/node": "^26.4.0",
+		"@types/vscode": "1.134.0",
 		"@typescript-eslint/eslint-plugin": "^8.68.0",
 		"@typescript-eslint/parser": "^8.68.0",
 		"@vscode/test-cli": "^0.0.15",
 		"@vscode/test-electron": "^3.1.0",
 		"eslint": "^10.9.1",
-		"typescript": "^6.0.3"
+		"typescript": "^7.0.2"
 	},
 	"resolutions": {
 		"diff": "^9.0.0",
