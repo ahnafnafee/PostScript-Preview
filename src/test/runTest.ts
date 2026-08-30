@@ -10,6 +10,51 @@ import {
 const POSTSCRIPT_LANGUAGE_VSIX_URL =
     "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/mxschmitt/vsextensions/postscript/latest/vspackage";
 
+interface CliInvocation {
+    command: string;
+    args: string[];
+    env?: NodeJS.ProcessEnv;
+}
+
+function resolveCliInvocation(vscodeExecutablePath: string): CliInvocation {
+    const [cliPath, ...cliArgs] =
+        resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
+
+    if (process.platform !== "win32") {
+        return { command: cliPath, args: cliArgs };
+    }
+
+    const installationDirectory = path.dirname(vscodeExecutablePath);
+    const cliScript = fs
+        .readdirSync(installationDirectory, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) =>
+            path.join(
+                installationDirectory,
+                entry.name,
+                "resources",
+                "app",
+                "out",
+                "cli.js"
+            )
+        )
+        .find((candidate) => fs.existsSync(candidate));
+
+    if (!cliScript) {
+        throw new Error("Could not locate the downloaded VS Code CLI script");
+    }
+
+    return {
+        command: vscodeExecutablePath,
+        args: [cliScript, ...cliArgs],
+        env: {
+            ...process.env,
+            ELECTRON_RUN_AS_NODE: "1",
+            VSCODE_DEV: "",
+        },
+    };
+}
+
 /**
  * This extension declares an extension dependency on mxschmitt.postscript
  * (it registers the `postscript` language for .ps/.eps files), so the
@@ -34,15 +79,15 @@ async function installPostscriptLanguageExtension(
     fs.mkdirSync(path.dirname(vsixPath), { recursive: true });
     fs.writeFileSync(vsixPath, Buffer.from(await response.arrayBuffer()));
 
-    const [cliPath, ...cliArgs] =
-        resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
+    const cli = resolveCliInvocation(vscodeExecutablePath);
     const result = cp.spawnSync(
-        cliPath,
-        [...cliArgs, "--install-extension", vsixPath],
+        cli.command,
+        [...cli.args, "--install-extension", vsixPath],
         {
             encoding: "utf-8",
             stdio: "inherit",
-            shell: process.platform === "win32",
+            env: cli.env,
+            shell: false,
         }
     );
     if (result.status !== 0) {
@@ -60,7 +105,10 @@ async function main() {
 
         // The path to test runner
         // Passed to --extensionTestsPath
-        const extensionTestsPath = path.resolve(__dirname, "./suite/index");
+        const extensionTestsPath = path.resolve(
+            __dirname,
+            "./integration/index"
+        );
 
         // Download VS Code and install the PostScript Language dependency
         // into the test instance before running the tests.

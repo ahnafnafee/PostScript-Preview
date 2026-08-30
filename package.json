@@ -2,7 +2,7 @@
 	"name": "postscript-preview",
 	"displayName": "PostScript Preview",
 	"description": "PostScript Preview is an extension that helps to preview EPS and PS files in Visual Studio Code.",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"icon": "images/logo.png",
 	"publisher": "ahnafnafee",
 	"engines": {
@@ -55,7 +55,7 @@
 				"postscript-preview.path.ps2pdf": {
 					"type": "string",
 					"default": "ps2pdf",
-					"description": "Path to ps2pdf executable (from GhostScript). Use this if ps2pdf is not in your system PATH."
+					"description": "Path to the ps2pdf executable from Ghostscript. On Windows, the default uses gswin64c.exe from PATH so conversion does not require a command shell."
 				},
 				"postscript-preview.path.pdftocairo": {
 					"type": "string",
@@ -72,11 +72,13 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn compile",
-		"compile": "tsc -p ./",
+		"clean": "node -e \"require('node:fs').rmSync('out', { recursive: true, force: true })\"",
+		"compile": "yarn clean && tsc -p ./",
 		"lint": "eslint src",
 		"watch": "tsc -watch -p ./",
-		"pretest": "yarn compile",
-		"test": "node ./out/test/runTest.js"
+		"test": "yarn compile && mocha --ui tdd --color --timeout 10000 \"out/test/unit/**/*.test.js\" && node ./out/test/runTest.js",
+		"test:unit": "yarn compile && mocha --ui tdd --color --timeout 10000 \"out/test/unit/**/*.test.js\"",
+		"test:integration": "yarn compile && node ./out/test/runTest.js"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
@@ -93,6 +95,7 @@
 	},
 	"resolutions": {
 		"diff": "^9.0.0",
+		"glob": "^13.0.6",
 		"serialize-javascript": "^7.1.1"
 	},
 	"repository": {
@@ -101,5 +104,6 @@
 	},
 	"sponsor": {
 		"url": "https://github.com/sponsors/ahnafnafee"
-	}
+	},
+	"packageManager": "yarn@4.18.0+sha512.fcb8716fe7cd0eece141ffc18b92193a9df9204c1ba83189c288835223fc0bbe64af473bab0d5e9927a7daeb5caf2bb07eb2787cc9338ca040ea125f2a1f2f7e"
 }

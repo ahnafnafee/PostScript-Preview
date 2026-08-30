@@ -9,7 +9,7 @@ export async function run(): Promise<void> {
         timeout: 10_000,
     });
 
-    const testsRoot = path.resolve(__dirname, "..");
+    const testsRoot = __dirname;
     const files = await glob("**/*.test.js", { cwd: testsRoot });
 
     files.forEach((file) => mocha.addFile(path.resolve(testsRoot, file)));

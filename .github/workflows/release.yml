@@ -17,11 +17,26 @@ jobs:
               uses: actions/setup-node@v7
               with:
                   node-version: 24
-                  cache: "yarn"
+            - name: Enable Corepack
+              run: corepack enable
+            - name: Locate Yarn cache
+              id: yarn-cache
+              run: echo "path=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+            - name: Cache Yarn packages
+              uses: actions/cache@v5
+              with:
+                  path: ${{ steps.yarn-cache.outputs.path }}
+                  key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+                  restore-keys: |
+                      yarn-${{ runner.os }}-
             - name: Install dependencies
               run: |
                   npm install --global @vscode/vsce@3.9.2 ovsx@1.1.1
-                  yarn install --frozen-lockfile
+                  yarn install --immutable
+            - name: Install native dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install --yes ghostscript poppler-utils
             - name: Get package version
               id: package-version
               run: |
@@ -84,7 +99,7 @@ jobs:
 
             - name: Build extension
               if: env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false'
-              run: vsce package -o postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
+              run: vsce package --no-dependencies -o postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
             - name: Upload a Build Artifact
               if: env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false'
               uses: actions/upload-artifact@v7
@@ -126,4 +141,4 @@ jobs:
               if: env.VS_EXISTS == 'false'
               env:
                   VSCE_PAT: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-              run: vsce publish --packagePath "postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix"
+              run: vsce publish --no-dependencies --packagePath "postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix"

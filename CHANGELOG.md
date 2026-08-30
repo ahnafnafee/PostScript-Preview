@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.6.1] - 2026-08-29
+
+### Improvements
+
+-   Redesigned the README for the Visual Studio Marketplace with current badges, clearer setup instructions, and streamlined project navigation.
+-   Added focused unit coverage and separated it from the VS Code integration test suite.
+-   Upgraded the project from Yarn Classic to Corepack-managed Yarn 4 with immutable CI installs.
+
+### Fixes
+
+-   Made Windows PostScript conversion use the native Ghostscript executable without a command shell.
+-   Escaped filenames rendered in the preview and improved single-page and accessible pagination layouts.
+
 ## [0.6.0] - 2026-08-29
 
 ### Security

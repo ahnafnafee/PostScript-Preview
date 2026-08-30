@@ -1,158 +1,190 @@
-<p align="center">
-    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview"><img src="https://img.shields.io/visual-studio-marketplace/v/ahnafnafee.postscript-preview?logo=visualstudiocode&style=for-the-badge" alt="Version" /></a>
-    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview"><img src="https://img.shields.io/visual-studio-marketplace/r/ahnafnafee.postscript-preview?logo=visualstudiocode&style=for-the-badge" alt="Rating" /></a>
-    <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview"><img src="https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/ahnafnafee.postscript-preview?logo=visualstudiocode&style=for-the-badge" alt="Installs" /></a>
+<div align="center">
+
+<img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="PostScript Preview logo" width="128">
+
+<h1>PostScript Preview</h1>
+
+<p>Preview PostScript and EPS files without leaving Visual Studio Code.</p>
+
+<p>
+  <a href="https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview"><strong>Visual Studio Marketplace</strong></a> ·
+  <a href="https://open-vsx.org/extension/ahnafnafee/postscript-preview"><strong>Open VSX</strong></a> ·
+  <a href="https://github.com/ahnafnafee/PostScript-Preview/releases"><strong>Changelog</strong></a> ·
+  <a href="https://github.com/ahnafnafee/PostScript-Preview/issues"><strong>Feedback</strong></a>
 </p>
 
+[![Marketplace version][marketplace-version-shield]][marketplace-link] [![Marketplace installs][marketplace-installs-shield]][marketplace-link] [![Marketplace rating][marketplace-rating-shield]][marketplace-link] [![Open VSX version][open-vsx-shield]][open-vsx-link]<br>[![Test status][tests-shield]][tests-link] [![CodeQL status][codeql-shield]][codeql-link] [![License][license-shield]][license-link] [![GitHub stars][stars-shield]][stars-link]
+
+</div>
+
 <p align="center">
-    <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="PostScript Preview Logo" width="128px" height="auto" />
-</p>
-<p align="center">
-    <br/>
-    <a title="READ REQUIREMENTS AFTER INSTALL" href="#-requirements"><img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/docs/images/req-btn.png" alt="Read Requirements After Install"></a>
+  <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/demo/postscript-preview-demo.gif" alt="PostScript Preview showing a PostScript document beside its source" width="900">
 </p>
 
-<h1 align="center">PostScript Preview for VS Code</h1>
+> **Requirements:** PostScript Preview uses Ghostscript and Poppler installed on your computer. Complete the [requirements](#requirements) after installing the extension.
 
-> **A popular PostScript and EPS file previewer for Visual Studio Code** — Preview, pan, zoom, and debug your `.ps` and `.eps` files directly in VS Code. Supports multi-page documents, GhostScript console output, custom themes, and more.
+## Quick start
 
-## ✨ Features
+1. Install [PostScript Preview from the Visual Studio Marketplace][marketplace-link] or [Open VSX][open-vsx-link].
+2. Install [Ghostscript](https://www.ghostscript.com/) and [Poppler](https://poppler.freedesktop.org/) for your operating system.
+3. Open a `.ps` or `.eps` file in Visual Studio Code.
+4. Select the preview icon in the editor title bar.
 
--   **Live Preview** — View EPS and PS files side-by-side with your code
--   **Pan & Zoom** — Smooth SVG-based pan and zoom controls
--   **Multi-Page Support** — Navigate through multi-page PostScript documents
--   **Theme Support** — Automatic light/dark mode matching VS Code theme
--   **Background Color Picker** — Customize preview background color
--   **Console Output** — View GhostScript output (from `==`, `print`, etc.)
--   **Custom Paths** — Configure paths to GhostScript and Poppler tools
--   **Auto-Refresh** — Preview updates automatically when you save
+The Visual Studio Marketplace installs the companion [PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript) extension automatically so Visual Studio Code can recognize PostScript files. Open VSX does not currently mirror that dependency; Open VSX and VSCodium users must first [download its VSIX](https://marketplace.visualstudio.com/_apis/public/gallery/publishers/mxschmitt/vsextensions/postscript/latest/vspackage) and run **Extensions: Install from VSIX...**.
 
-<img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/demo/postscript-preview-demo.gif" alt="PostScript Preview Demo" style="zoom:50%;" />
+## Highlights
 
-## 🚀 Quick Start
+| | |
+| --- | --- |
+| **Live preview**<br>View `.ps` and `.eps` output beside the source file. | **Multi-page navigation**<br>Move between pages or jump directly to a page. |
+| **Pan and zoom**<br>Inspect SVG output with smooth navigation controls. | **Automatic refresh**<br>Regenerate the preview whenever the source file is saved. |
+| **Theme-aware interface**<br>Match Visual Studio Code's light and dark themes. | **Custom background**<br>Choose a preview color for transparent artwork. |
+| **Ghostscript output**<br>Read output from `==`, `print`, and other operators. | **Configurable tools**<br>Use custom Ghostscript and Poppler executable paths. |
 
-1. Install this extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview)
-2. Install [GhostScript](https://www.ghostscript.com/) and [Poppler](https://poppler.freedesktop.org/)
-3. Open any `.ps` or `.eps` file
-4. Click the preview icon in the editor title bar
+## Requirements
 
-## 📋 Requirements
+PostScript Preview delegates document conversion to three command-line tools:
 
-This extension requires:
-
--   **[PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript)** extension — required for the preview button to appear (it registers `.ps`/`.eps` files as PostScript, which this extension's preview button and activation depend on; it also provides syntax highlighting). Installed automatically alongside this extension.
--   **GhostScript** (provides `ps2pdf`)
--   **Poppler** (provides `pdftocairo` and `pdfinfo`)
-
-> **No preview button?** If the preview icon does not appear in the editor title bar, your `.ps`/`.eps` file is likely opening as *Plain Text* (check the language indicator in the status bar). Make sure the [PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript) extension is installed and enabled, then reload VS Code.
+| Tool | Provided by | Purpose |
+| --- | --- | --- |
+| `ps2pdf` (`gswin64c.exe` on Windows) | Ghostscript | Converts PostScript or EPS to PDF. |
+| `pdftocairo` | Poppler | Converts a PDF page to SVG for the preview. |
+| `pdfinfo` | Poppler | Detects the number of pages in a document. |
 
 ### macOS
+
+Install both dependencies with [Homebrew](https://brew.sh/):
 
 ```bash
 brew install ghostscript poppler
 ```
 
-### Ubuntu / Debian
+### Ubuntu and Debian
 
 ```bash
+sudo apt-get update
 sudo apt-get install ghostscript poppler-utils -y
 ```
 
 ### Windows
 
-Install via [Chocolatey](https://chocolatey.org/install) (run as Administrator):
+Install Ghostscript with [Chocolatey](https://chocolatey.org/install) from an Administrator terminal:
 
 ```powershell
 choco install ghostscript -y
-choco install poppler --version 0.89.0 -y --force
 ```
 
-> **Why the Poppler pin?** Chocolatey `poppler` packages newer than `0.89.0` do not ship working Windows binaries (`25.x`+ contain only the source tarball, and the `22.11.x` builds are missing their dependency DLLs), so `0.89.0` is the newest version that works there. If you prefer a current Poppler, download a prebuilt release from [poppler-windows](https://github.com/oschwartz10612/poppler-windows/releases) instead, extract it, and point `postscript-preview.path.pdftocairo` / `postscript-preview.path.pdfinfo` at the executables in its `Library\bin` folder (see [Configuration](#configuration)).
+Download the latest prebuilt Poppler archive from [poppler-windows](https://github.com/oschwartz10612/poppler-windows/releases/latest), then extract it to `C:\Program Files\poppler`. The Chocolatey `poppler` package does not currently include a complete set of working Windows binaries, so the release archive is the recommended source.
 
-Add to PATH (auto-detects the installed GhostScript version):
+Add the installed tools to the system `PATH` (the command detects the installed Ghostscript version):
 
 ```powershell
 $gs = (Get-ChildItem "C:\Program Files\gs\gs*\bin\gswin64c.exe" | Select-Object -Last 1).Directory.Parent.FullName
-[Environment]::SetEnvironmentVariable("Path",[Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";$gs\lib;$gs\bin;C:\ProgramData\chocolatey\lib\poppler\tools",[EnvironmentVariableTarget]::Machine)
+$popplerBin = (Get-ChildItem "C:\Program Files\poppler" -Filter pdftocairo.exe -Recurse | Select-Object -First 1).DirectoryName
+[Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";$gs\lib;$gs\bin;$popplerBin", [EnvironmentVariableTarget]::Machine)
 ```
 
-**Restart VS Code** after installation.
+Restart Visual Studio Code after installation.
 
-<details>
-<summary>Manual PATH setup</summary>
+If automatic `PATH` setup does not work, add these directories through **System Properties → Environment Variables**, replacing `<version>` with the installed Ghostscript version:
 
-If you have issues setting PATH, add these manually via System Properties → Environment Variables (substitute your installed GhostScript version, e.g. `gs10.07.1`):
-
-```
+```text
 C:\Program Files\gs\gs<version>\lib
 C:\Program Files\gs\gs<version>\bin
-C:\ProgramData\chocolatey\lib\poppler\tools
+C:\Program Files\poppler\poppler-<version>\Library\bin
 ```
-
-</details>
 
 ## Configuration
 
-Configure custom executable paths in VS Code settings (useful for conda environments or non-standard installations):
+Custom paths are useful for Conda environments and other non-standard installations. Open Visual Studio Code settings and search for **PostScript Preview**, or add the values directly to `settings.json`.
 
-| Setting                              | Description                   | Default      |
-| ------------------------------------ | ----------------------------- | ------------ |
-| `postscript-preview.path.ps2pdf`     | Path to ps2pdf executable     | `ps2pdf`     |
-| `postscript-preview.path.pdftocairo` | Path to pdftocairo executable | `pdftocairo` |
-| `postscript-preview.path.pdfinfo`    | Path to pdfinfo executable    | `pdfinfo`    |
-
-Example `settings.json`:
+| Setting | Description | Default |
+| --- | --- | --- |
+| `postscript-preview.path.ps2pdf` | Path to the `ps2pdf` executable. On Windows, the default safely invokes `gswin64c.exe` from `PATH`. | `ps2pdf` |
+| `postscript-preview.path.pdftocairo` | Path to the `pdftocairo` executable. | `pdftocairo` |
+| `postscript-preview.path.pdfinfo` | Path to the `pdfinfo` executable. | `pdfinfo` |
 
 ```json
 {
-    "postscript-preview.path.ps2pdf": "/opt/ghostscript/bin/ps2pdf",
-    "postscript-preview.path.pdftocairo": "/opt/poppler/bin/pdftocairo"
+  "postscript-preview.path.ps2pdf": "/opt/ghostscript/bin/ps2pdf",
+  "postscript-preview.path.pdftocairo": "/opt/poppler/bin/pdftocairo",
+  "postscript-preview.path.pdfinfo": "/opt/poppler/bin/pdfinfo"
 }
 ```
 
-## Multi-Page Documents
+## Using the preview
 
-For PostScript files with multiple `showpage` commands, navigation controls appear automatically:
+### Multi-page documents
 
--   **◀ / ▶** — Navigate between pages
--   **Page input** — Jump to a specific page
+Navigation controls appear when a PostScript document contains multiple pages:
 
-The preview resets to page 1 when the source file is modified.
+- Select **◀** or **▶** to move one page at a time.
+- Enter a page number to jump directly to it.
+- Save the source file to regenerate the document and return to page 1.
 
-## Console Output
+### Console output
 
-View GhostScript output in VS Code:
+To inspect Ghostscript output:
 
-1. Open Output panel (`Ctrl+Shift+U` / `Cmd+Shift+U`)
-2. Select **"PostScript-Preview"** from the dropdown
-3. Output from `==`, `print`, and other operators will appear here
+1. Open the Output panel with `Ctrl+Shift+U` on Windows or Linux, or `Cmd+Shift+U` on macOS.
+2. Select **PostScript-Preview** from the channel list.
+3. Save or reopen the preview to run the converter.
 
-## Known Issues
+### Troubleshooting
 
-None currently. [Report issues here](https://github.com/ahnafnafee/PostScript-Preview/issues).
+| Problem | What to check |
+| --- | --- |
+| The preview icon is missing. | Confirm the file's language mode is **PostScript**, then make sure the [PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript) extension is installed and enabled. |
+| A converter cannot be found. | Run `ps2pdf`, `pdftocairo`, and `pdfinfo` in a terminal, or configure their absolute paths. |
+| A newly installed tool is not detected. | Restart Visual Studio Code so it receives the updated `PATH`. |
 
-## Credits
-
--   [mkvoya/eps-preview](https://github.com/mkvoya/eps-preview) — Original base extension
--   [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) — Pan and zoom library
--   [pickr](https://github.com/Simonwep/pickr) — Color picker library
+If the problem continues, [open an issue](https://github.com/ahnafnafee/PostScript-Preview/issues/new/choose) with your operating system, extension version, and the **PostScript-Preview** output.
 
 ## Development
 
-See [TESTING.md](TESTING.md) for local development instructions.
-
 ```bash
+git clone https://github.com/ahnafnafee/PostScript-Preview.git
+cd PostScript-Preview
+corepack enable
 yarn install
 yarn compile
-# Press F5 in VS Code to launch Extension Development Host
 ```
+
+Press `F5` in Visual Studio Code to open an Extension Development Host.
+
+### Tests
+
+| Command | Coverage |
+| --- | --- |
+| `yarn test:unit` | Fast tests for pure preview behavior. |
+| `yarn test:integration` | Extension activation and behavior inside a real Visual Studio Code host. |
+| `yarn test` | The complete unit and integration test suite. |
+
+See the [testing guide](https://github.com/ahnafnafee/PostScript-Preview/blob/master/TESTING.md) for prerequisites, sample documents, and manual checks.
+
+## Credits
+
+- [mkvoya/eps-preview](https://github.com/mkvoya/eps-preview) — the original extension on which this project was based.
+- [svg-pan-zoom](https://github.com/bumbu/svg-pan-zoom) — SVG pan and zoom controls.
+- [Pickr](https://github.com/Simonwep/pickr) — the preview background color picker.
 
 ## License
 
-[MIT](LICENSE)
+PostScript Preview is available under the [MIT License][license-link].
 
----
+If PostScript Preview is useful to you, consider [starring the repository][stars-link] or leaving a review on the [Visual Studio Marketplace][marketplace-link].
 
-<p align="center">
-    <strong>⭐ If you find this extension useful, please star the repo and leave a review!</strong>
-</p>
+[marketplace-link]: https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview
+[marketplace-version-shield]: https://vsmarketplacebadges.dev/version-short/ahnafnafee.postscript-preview.svg?style=for-the-badge
+[marketplace-installs-shield]: https://vsmarketplacebadges.dev/installs-short/ahnafnafee.postscript-preview.svg?style=for-the-badge
+[marketplace-rating-shield]: https://vsmarketplacebadges.dev/rating-short/ahnafnafee.postscript-preview.svg?style=for-the-badge
+[open-vsx-link]: https://open-vsx.org/extension/ahnafnafee/postscript-preview
+[open-vsx-shield]: https://img.shields.io/open-vsx/v/ahnafnafee/postscript-preview?label=Open%20VSX&style=for-the-badge
+[tests-link]: https://github.com/ahnafnafee/PostScript-Preview/actions/workflows/test.yml
+[tests-shield]: https://img.shields.io/github/actions/workflow/status/ahnafnafee/PostScript-Preview/test.yml?branch=master&label=tests&logo=github&style=for-the-badge
+[codeql-link]: https://github.com/ahnafnafee/PostScript-Preview/actions/workflows/codeql-analysis.yml
+[codeql-shield]: https://img.shields.io/github/actions/workflow/status/ahnafnafee/PostScript-Preview/codeql-analysis.yml?branch=master&label=CodeQL&logo=github&style=for-the-badge
+[license-link]: https://github.com/ahnafnafee/PostScript-Preview/blob/master/LICENSE
+[license-shield]: https://img.shields.io/github/license/ahnafnafee/PostScript-Preview?style=for-the-badge
+[stars-link]: https://github.com/ahnafnafee/PostScript-Preview
+[stars-shield]: https://img.shields.io/github/stars/ahnafnafee/PostScript-Preview?style=for-the-badge

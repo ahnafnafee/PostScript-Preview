@@ -6,17 +6,26 @@ This guide explains how to test the extension locally during development.
 
 Ensure you have the following installed:
 
-1. **Node.js 24** (the active LTS release used by CI)
-2. **GhostScript** (provides `ps2pdf`)
+1. **Node.js 24** with Corepack (the active LTS release used by CI)
+2. **Ghostscript** (provides `ps2pdf`; the extension invokes `gswin64c.exe` directly on Windows)
 3. **Poppler** (provides `pdftocairo` and `pdfinfo`)
 
 ### Verify Prerequisites
 
+On macOS or Linux:
+
 ```bash
-# Check if commands are available
 ps2pdf --help
 pdftocairo --help
 pdfinfo --help
+```
+
+On Windows:
+
+```powershell
+gswin64c -version
+pdftocairo -v
+pdfinfo -v
 ```
 
 ## Setup
@@ -24,6 +33,7 @@ pdfinfo --help
 1. Install dependencies:
 
     ```bash
+    corepack enable
     yarn install
     ```
 
@@ -102,11 +112,36 @@ Test files are located in `examples/`:
 -   Edit and save the PostScript file
 -   Preview should auto-update
 
-## Running Tests
+## Automated Tests
+
+Tests are grouped by the boundary they exercise:
+
+```text
+src/test/
+├── unit/          # Pure logic; no VS Code host or native tools
+├── integration/   # Extension behavior in a real VS Code host
+└── runTest.ts     # Downloads and launches the integration test host
+```
+
+Run the fast unit suite while developing pure preview behavior:
+
+```bash
+yarn test:unit
+```
+
+Run the integration suite after installing Ghostscript and Poppler:
+
+```bash
+yarn test:integration
+```
+
+Run the complete suite in the same order as CI:
 
 ```bash
 yarn test
 ```
+
+CI runs both suites on Node.js 24 across Ubuntu, Windows, and macOS. Linux integration tests use Xvfb to provide the display required by the Visual Studio Code test host.
 
 ## Packaging
 
@@ -114,7 +149,7 @@ Build a VSIX package for local installation:
 
 ```bash
 npm install -g @vscode/vsce
-vsce package
+vsce package --no-dependencies
 ```
 
 Install the generated `.vsix` file via:
@@ -139,20 +174,20 @@ Before publishing a new version:
 1. Update version in `package.json`
 2. Update `CHANGELOG.md` with new features/fixes
 3. Compile and test locally (`yarn compile` + `F5`)
-4. Build package to verify: `vsce package`
+4. Build package to verify: `vsce package --no-dependencies`
 
 ### Publish
 
 ```bash
-vsce publish
+vsce publish --no-dependencies
 ```
 
 Or publish with a version bump:
 
 ```bash
-vsce publish patch  # 0.5.0 → 0.5.1
-vsce publish minor  # 0.5.0 → 0.6.0
-vsce publish major  # 0.5.0 → 1.0.0
+vsce publish --no-dependencies patch  # 0.6.0 → 0.6.1
+vsce publish --no-dependencies minor  # 0.6.0 → 0.7.0
+vsce publish --no-dependencies major  # 0.6.0 → 1.0.0
 ```
 
 ### View Published Extension

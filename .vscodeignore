@@ -1,5 +1,7 @@
 .vscode/**
 .vscode-test/**
+.github/**
+.yarn/**
 out/test/**
 src/**
 .gitignore
@@ -21,7 +23,11 @@ eslint.config.js
 .mailmap
 .prettierignore
 .prettierrc
-.yarnrc
+.yarnrc.yml
+ANTIGRAVITY.md
+TESTING.md
+docs/**
+examples/**
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 generateEmojiShortcodeMap.js
