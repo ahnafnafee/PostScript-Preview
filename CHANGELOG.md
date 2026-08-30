@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.6.2] - 2026-08-30
+
+### Documentation
+
+-   Restored the prominent requirements shortcut at the top of the README so native setup instructions remain easy to find.
+
 ## [0.6.1] - 2026-08-29
 
 ### Improvements
