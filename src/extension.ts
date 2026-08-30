@@ -6,7 +6,11 @@ import * as vscode from "vscode";
 // biome-ignore lint/style/useNodejsImportProtocol: <explanation>
 import path = require("path");
 import { PreviewState } from "./types";
-import { generatePreview } from "./preview";
+import {
+    cleanupAllPreviewFiles,
+    cleanupPreviewFile,
+    generatePreview,
+} from "./preview";
 import { showWhatsNew } from "./whats-new";
 
 /**
@@ -109,13 +113,19 @@ export function activate(context: vscode.ExtensionContext): void {
 
             // Watch for file changes
             const watcher = vscode.workspace.createFileSystemWatcher(filePath);
-            watcher.onDidChange((_: vscode.Uri) => {
+            watcher.onDidChange(() => {
                 channel.appendLine(`File changed, regenerating : ${filePath}`);
                 // Reset to page 1 on file change and regenerate PDF
                 generatePreview(mainFilePath, panel, channel);
             });
             panel.onDidDispose(() => {
                 watcher.dispose();
+                const state = (panel as any).__previewState as
+                    | PreviewState
+                    | undefined;
+                if (state) {
+                    cleanupPreviewFile(state.pdfPath);
+                }
                 channel.appendLine(`Stop watching ${filePath}`);
             });
         }
@@ -128,4 +138,6 @@ export function activate(context: vscode.ExtensionContext): void {
 /**
  * Called when the extension is deactivated
  */
-export function deactivate(): void {}
+export function deactivate(): void {
+    cleanupAllPreviewFiles();
+}

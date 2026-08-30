@@ -12,20 +12,22 @@ jobs:
         name: Build and package
         timeout-minutes: 10
         steps:
-            - uses: actions/checkout@v4
-            - name: Use Node.js 22
-              uses: actions/setup-node@v4
+            - uses: actions/checkout@v7
+            - name: Use Node.js 24
+              uses: actions/setup-node@v7
               with:
-                  node-version: 22
+                  node-version: 24
                   cache: "yarn"
                   registry-url: https://registry.npmjs.org/
             - name: Install dependencies
               run: |
-                  npm install -g @vscode/vsce
+                  npm install --global @vscode/vsce@3.9.2 ovsx@1.1.1
                   yarn install --frozen-lockfile
-            - name: Get NPM Version
+            - name: Get package version
               id: package-version
-              uses: martinbeentjes/npm-get-version-action@v1.3.1
+              run: |
+                  VERSION=$(node -p "require('./package.json').version")
+                  echo "current-version=$VERSION" >> "$GITHUB_OUTPUT"
             - name: Run Tests
               run: xvfb-run -a yarn test
             - name: Check if version exists
@@ -34,6 +36,7 @@ jobs:
                   VERSION: ${{ steps.package-version.outputs.current-version }}
               run: |
                   echo "Checking version $VERSION..."
+                  echo "VERSION=$VERSION" >> "$GITHUB_ENV"
                   
                   # Check VS Marketplace
                   VS_Response=$(curl -s --location 'https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery' \
@@ -56,10 +59,10 @@ jobs:
                   # Check if version exists (robust jq boolean)
                   if echo "$VS_Response" | jq -e --arg v "$VERSION" '.results[0].extensions[0].versions | map(select(.version == $v)) | length > 0' > /dev/null; then
                     echo "Version $VERSION already exists in VS Marketplace."
-                    echo "VS_EXISTS=true" >> $GITHUB_ENV
+                    echo "VS_EXISTS=true" >> "$GITHUB_ENV"
                   else
                     echo "Version $VERSION not found in VS Marketplace."
-                    echo "VS_EXISTS=false" >> $GITHUB_ENV
+                    echo "VS_EXISTS=false" >> "$GITHUB_ENV"
                   fi
 
                   # Check Open VSX
@@ -67,10 +70,10 @@ jobs:
                   
                   if [ "$OVSX_Status" = "200" ]; then
                     echo "Version $VERSION already exists in Open VSX."
-                    echo "OVSX_EXISTS=true" >> $GITHUB_ENV
+                    echo "OVSX_EXISTS=true" >> "$GITHUB_ENV"
                   else
                     echo "Version $VERSION not found in Open VSX."
-                    echo "OVSX_EXISTS=false" >> $GITHUB_ENV
+                    echo "OVSX_EXISTS=false" >> "$GITHUB_ENV"
                   fi
 
             - name: Validate Version Status
@@ -85,7 +88,7 @@ jobs:
               run: vsce package -o postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
             - name: Upload a Build Artifact
               if: env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false'
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7
               with:
                   name: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
                   path: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
@@ -106,7 +109,7 @@ jobs:
                   ' CHANGELOG.md > RELEASE_BODY.md
             - name: Create release with artifact
               if: (env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false') && success()
-              uses: softprops/action-gh-release@v2.0.8
+              uses: softprops/action-gh-release@v3
               env:
                   GITHUB_TOKEN: ${{ secrets.github_token }}
               with:
@@ -117,14 +120,11 @@ jobs:
                   files: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
             - name: Publish to Open VSX Registry
               if: env.OVSX_EXISTS == 'false'
-              uses: HaaLeo/publish-vscode-extension@v1
-              with:
-                  pat: ${{ secrets.OPEN_VSX_TOKEN }}
-                  extensionFile: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
+              env:
+                  OVSX_PAT: ${{ secrets.OPEN_VSX_TOKEN }}
+              run: ovsx publish "postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix" --pat "$OVSX_PAT"
             - name: Publish to Visual Studio Marketplace
               if: env.VS_EXISTS == 'false'
-              uses: HaaLeo/publish-vscode-extension@v1
-              with:
-                  pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-                  registryUrl: https://marketplace.visualstudio.com
-                  extensionFile: postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
+              env:
+                  VSCE_PAT: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+              run: vsce publish --packagePath "postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix"

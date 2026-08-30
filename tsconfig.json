@@ -1,10 +1,15 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
-		"target": "es6",
+		"target": "es2019",
 		"outDir": "out",
 		"lib": [
-			"es6"
+			"es2019"
+		],
+		"types": [
+			"node",
+			"mocha",
+			"vscode"
 		],
 		"sourceMap": true,
 		"rootDir": "src",
