@@ -6,7 +6,7 @@ This guide explains how to test the extension locally during development.
 
 Ensure you have the following installed:
 
-1. **Node.js** (v14 or later)
+1. **Node.js 24** (the active LTS release used by CI)
 2. **GhostScript** (provides `ps2pdf`)
 3. **Poppler** (provides `pdftocairo` and `pdfinfo`)
 

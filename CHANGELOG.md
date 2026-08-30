@@ -1,5 +1,20 @@
 # Change Log
 
+## [0.6.0] - 2026-08-29
+
+### Security
+
+-   Removed the abandoned `temp` runtime dependency and replaced it with Node.js built-in temporary-directory handling.
+-   Stopped constructing shell command strings for GhostScript and Poppler tools; executable paths and arguments are now passed directly to child processes.
+-   Refreshed the supported development dependencies and regenerated the lockfile with patched transitive packages.
+
+### Maintenance
+
+-   Updated CI to Node.js 24 and current Node.js 24-based GitHub Actions.
+-   Migrated extension tests to the current VS Code test CLI, including automatic installation of declared extension dependencies.
+-   Updated the VS Code test runtime to support current macOS runners.
+-   Added weekly Dependabot updates for npm packages and GitHub Actions.
+
 ## [0.5.4] - 2025-12-23
 
 -   Fixed an issue where previewing files with special characters in the filename (e.g., spaces, parentheses) would fail with a syntax error.
