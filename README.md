@@ -1,4 +1,4 @@
-<div align="center"><a id="readme-top"></a>
+<div align="center">
 
 <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/images/logo.png" alt="PostScript Preview logo" width="128">
 
@@ -172,25 +172,19 @@ See the [testing guide](https://github.com/ahnafnafee/PostScript-Preview/blob/ma
 
 PostScript Preview is available under the [MIT License][license-link].
 
-<div align="center">
-
 If PostScript Preview is useful to you, consider [starring the repository][stars-link] or leaving a review on the [Visual Studio Marketplace][marketplace-link].
 
-<a href="#readme-top">Back to top</a>
-
-</div>
-
 [marketplace-link]: https://marketplace.visualstudio.com/items?itemName=ahnafnafee.postscript-preview
-[marketplace-version-shield]: https://vsmarketplacebadges.dev/version-short/ahnafnafee.postscript-preview.svg
-[marketplace-installs-shield]: https://vsmarketplacebadges.dev/installs-short/ahnafnafee.postscript-preview.svg
-[marketplace-rating-shield]: https://vsmarketplacebadges.dev/rating-short/ahnafnafee.postscript-preview.svg
+[marketplace-version-shield]: https://vsmarketplacebadges.dev/version-short/ahnafnafee.postscript-preview.svg?style=for-the-badge
+[marketplace-installs-shield]: https://vsmarketplacebadges.dev/installs-short/ahnafnafee.postscript-preview.svg?style=for-the-badge
+[marketplace-rating-shield]: https://vsmarketplacebadges.dev/rating-short/ahnafnafee.postscript-preview.svg?style=for-the-badge
 [open-vsx-link]: https://open-vsx.org/extension/ahnafnafee/postscript-preview
-[open-vsx-shield]: https://img.shields.io/open-vsx/v/ahnafnafee/postscript-preview?label=Open%20VSX
+[open-vsx-shield]: https://img.shields.io/open-vsx/v/ahnafnafee/postscript-preview?label=Open%20VSX&style=for-the-badge
 [tests-link]: https://github.com/ahnafnafee/PostScript-Preview/actions/workflows/test.yml
-[tests-shield]: https://img.shields.io/github/actions/workflow/status/ahnafnafee/PostScript-Preview/test.yml?branch=master&label=tests&logo=github
+[tests-shield]: https://img.shields.io/github/actions/workflow/status/ahnafnafee/PostScript-Preview/test.yml?branch=master&label=tests&logo=github&style=for-the-badge
 [codeql-link]: https://github.com/ahnafnafee/PostScript-Preview/actions/workflows/codeql-analysis.yml
-[codeql-shield]: https://img.shields.io/github/actions/workflow/status/ahnafnafee/PostScript-Preview/codeql-analysis.yml?branch=master&label=CodeQL&logo=github
+[codeql-shield]: https://img.shields.io/github/actions/workflow/status/ahnafnafee/PostScript-Preview/codeql-analysis.yml?branch=master&label=CodeQL&logo=github&style=for-the-badge
 [license-link]: https://github.com/ahnafnafee/PostScript-Preview/blob/master/LICENSE
-[license-shield]: https://img.shields.io/github/license/ahnafnafee/PostScript-Preview
+[license-shield]: https://img.shields.io/github/license/ahnafnafee/PostScript-Preview?style=for-the-badge
 [stars-link]: https://github.com/ahnafnafee/PostScript-Preview
-[stars-shield]: https://img.shields.io/github/stars/ahnafnafee/PostScript-Preview?style=flat
+[stars-shield]: https://img.shields.io/github/stars/ahnafnafee/PostScript-Preview?style=for-the-badge
