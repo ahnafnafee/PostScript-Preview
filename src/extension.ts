@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
             if (!document) {
                 console.log("No active document. Do nothing.");
-                return;
+                return false;
             }
 
             const filename = path.basename(document.fileName);
@@ -53,7 +53,11 @@ export function activate(context: vscode.ExtensionContext): void {
 
             const mainFilePath = document.fileName;
 
-            generatePreview(mainFilePath, panel, channel);
+            const previewPath = generatePreview(mainFilePath, panel, channel);
+            if (!previewPath) {
+                panel.dispose();
+                return false;
+            }
             channel.appendLine(`Watching ${filePath}`);
 
             // Handle messages from webview for page navigation
@@ -128,6 +132,8 @@ export function activate(context: vscode.ExtensionContext): void {
                 }
                 channel.appendLine(`Stop watching ${filePath}`);
             });
+
+            return true;
         }
     );
 

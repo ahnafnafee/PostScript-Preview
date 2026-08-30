@@ -36,10 +36,24 @@ jobs:
               uses: actions/setup-node@v7
               with:
                   node-version: 24
-                  cache: "yarn"
+
+            - name: Enable Corepack
+              run: corepack enable
+
+            - name: Locate Yarn cache
+              id: yarn-cache
+              run: echo "path=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Yarn packages
+              uses: actions/cache@v5
+              with:
+                  path: ${{ steps.yarn-cache.outputs.path }}
+                  key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+                  restore-keys: |
+                      yarn-${{ runner.os }}-
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
 
             - name: Build
               run: yarn compile

@@ -11,6 +11,8 @@ import os = require("os");
 // biome-ignore lint/style/useNodejsImportProtocol: <explanation>
 import path = require("path");
 import { getConfig } from "./config";
+import { parsePdfPageCount } from "./pdf-info";
+import { createPostScriptConversionCommand } from "./postscript-command";
 import { PreviewState } from "./types";
 import { getWebviewContent } from "./webview";
 
@@ -85,9 +87,9 @@ export function getPageCount(
                 `pdfinfo exited with code ${result.status}: ${result.stderr}`
             );
         }
-        const match = result.stdout.match(/Pages:\s+(\d+)/);
-        if (match) {
-            return parseInt(match[1], 10);
+        const pageCount = parsePdfPageCount(result.stdout);
+        if (pageCount !== undefined) {
+            return pageCount;
         }
     } catch (err) {
         channel.appendLine(
@@ -188,9 +190,14 @@ export function generatePreview(
     }
 
     try {
-        const ps2pdfResult = spawnSync(
+        const conversionCommand = createPostScriptConversionCommand(
             config.ps2pdf,
-            ["-dEPSCrop", filepath, pdfPath],
+            filepath,
+            pdfPath
+        );
+        const ps2pdfResult = spawnSync(
+            conversionCommand.executable,
+            conversionCommand.args,
             { encoding: "utf-8", shell: false }
         );
 

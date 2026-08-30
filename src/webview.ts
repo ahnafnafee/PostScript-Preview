@@ -7,6 +7,14 @@
  * Generate complete webview HTML content
  * Uses CSS variables from VS Code for theme support
  */
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: SVG content can be string or Buffer
 export function getWebviewContent(
     fileName: string,
@@ -15,6 +23,19 @@ export function getWebviewContent(
     totalPages: number = 1
 ): string {
     const showNav = totalPages > 1;
+    const escapedFileName = escapeHtml(fileName);
+    const paginationControls = showNav
+        ? `<div class="page-nav">
+        <button id="prev" aria-label="Previous page" ${
+            currentPage <= 1 ? "disabled" : ""
+        }>◀</button>
+        <input type="number" id="pageNum" aria-label="Page number" value="${currentPage}" min="1" max="${totalPages}">
+        <span>/ ${totalPages}</span>
+        <button id="next" ${
+            currentPage >= totalPages ? "disabled" : ""
+        } aria-label="Next page">▶</button>
+      </div>`
+        : "";
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -93,7 +114,7 @@ export function getWebviewContent(
     }
 
     .page-nav {
-      display: ${showNav ? "flex" : "none"};
+      display: flex;
       align-items: center;
       gap: 6px;
     }
@@ -159,16 +180,9 @@ export function getWebviewContent(
 </head>
 <body>
   <div class="header">
-    <span class="filename">${fileName}</span>
+    <span class="filename">${escapedFileName}</span>
     <div class="controls">
-      <div class="page-nav">
-        <button id="prev" ${currentPage <= 1 ? "disabled" : ""}>◀</button>
-        <input type="number" id="pageNum" value="${currentPage}" min="1" max="${totalPages}">
-        <span>/ ${totalPages}</span>
-        <button id="next" ${
-            currentPage >= totalPages ? "disabled" : ""
-        }>▶</button>
-      </div>
+      ${paginationControls}
       <div class="pickr-wrap" id="colorPicker"></div>
     </div>
   </div>
