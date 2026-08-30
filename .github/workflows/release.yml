@@ -18,7 +18,6 @@ jobs:
               with:
                   node-version: 24
                   cache: "yarn"
-                  registry-url: https://registry.npmjs.org/
             - name: Install dependencies
               run: |
                   npm install --global @vscode/vsce@3.9.2 ovsx@1.1.1
