@@ -40,9 +40,11 @@
 
 This extension requires:
 
--   **[PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript)** extension for syntax highlighting
+-   **[PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript)** extension — required for the preview button to appear (it registers `.ps`/`.eps` files as PostScript, which this extension's preview button and activation depend on; it also provides syntax highlighting). Installed automatically alongside this extension.
 -   **GhostScript** (provides `ps2pdf`)
 -   **Poppler** (provides `pdftocairo` and `pdfinfo`)
+
+> **No preview button?** If the preview icon does not appear in the editor title bar, your `.ps`/`.eps` file is likely opening as *Plain Text* (check the language indicator in the status bar). Make sure the [PostScript Language](https://marketplace.visualstudio.com/items?itemName=mxschmitt.postscript) extension is installed and enabled, then reload VS Code.
 
 ### macOS
 
