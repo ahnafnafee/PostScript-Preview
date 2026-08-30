@@ -11,8 +11,7 @@
 ### Maintenance
 
 -   Updated CI to Node.js 24 and current Node.js 24-based GitHub Actions.
--   Migrated extension tests to the current VS Code test CLI, including automatic installation of declared extension dependencies.
--   Updated the VS Code test runtime to support current macOS runners.
+-   Updated the VS Code Electron test harness for current CI runners without replacing the project's custom test entry point.
 -   Added weekly Dependabot updates for npm packages and GitHub Actions.
 
 ## [0.5.4] - 2025-12-23

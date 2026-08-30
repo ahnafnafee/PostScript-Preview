@@ -15,7 +15,6 @@ demo/**
 .eslintignore
 .eslintrc.json
 eslint.config.js
-.vscode-test.mjs
 .gitattributes
 .gitignore
 .gitignore-revs
