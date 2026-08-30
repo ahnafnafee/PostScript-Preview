@@ -10,6 +10,7 @@
 
 ### Fixes
 
+-   Published an Open VSX-specific package without the unavailable PostScript language dependency while preserving automatic dependency installation in the Visual Studio Marketplace.
 -   Made Windows PostScript conversion use the native Ghostscript executable without a command shell.
 -   Escaped filenames rendered in the preview and improved single-page and accessible pagination layouts.
 

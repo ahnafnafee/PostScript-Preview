@@ -76,8 +76,9 @@
 		"compile": "yarn clean && tsc -p ./",
 		"lint": "eslint src",
 		"watch": "tsc -watch -p ./",
-		"test": "yarn compile && mocha --ui tdd --color --timeout 10000 \"out/test/unit/**/*.test.js\" && node ./out/test/runTest.js",
-		"test:unit": "yarn compile && mocha --ui tdd --color --timeout 10000 \"out/test/unit/**/*.test.js\"",
+		"test": "yarn compile && yarn test:tools && mocha --ui tdd --color --timeout 10000 \"out/test/unit/**/*.test.js\" && node ./out/test/runTest.js",
+		"test:tools": "node --test scripts/prepare-open-vsx-manifest.test.mjs",
+		"test:unit": "yarn compile && yarn test:tools && mocha --ui tdd --color --timeout 10000 \"out/test/unit/**/*.test.js\"",
 		"test:integration": "yarn compile && node ./out/test/runTest.js"
 	},
 	"devDependencies": {
