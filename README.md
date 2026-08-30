@@ -15,13 +15,15 @@
 
 [![Marketplace version][marketplace-version-shield]][marketplace-link] [![Marketplace installs][marketplace-installs-shield]][marketplace-link] [![Marketplace rating][marketplace-rating-shield]][marketplace-link] [![Open VSX version][open-vsx-shield]][open-vsx-link]<br>[![Test status][tests-shield]][tests-link] [![CodeQL status][codeql-shield]][codeql-link] [![License][license-shield]][license-link] [![GitHub stars][stars-shield]][stars-link]
 
+<p>
+  <a href="#requirements" title="Read requirements after install"><img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/docs/images/req-btn.png" alt="Read requirements after install"></a>
+</p>
+
 </div>
 
 <p align="center">
   <img src="https://github.com/ahnafnafee/PostScript-Preview/raw/master/demo/postscript-preview-demo.gif" alt="PostScript Preview showing a PostScript document beside its source" width="900">
 </p>
-
-> **Requirements:** PostScript Preview uses Ghostscript and Poppler installed on your computer. Complete the [requirements](#requirements) after installing the extension.
 
 ## Quick start
 
