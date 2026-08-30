@@ -100,6 +100,25 @@ jobs:
             - name: Build extension
               if: env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false'
               run: vsce package --no-dependencies -o postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix
+            - name: Build Open VSX extension
+              if: env.OVSX_EXISTS == 'false'
+              run: |
+                  cp package.json "$RUNNER_TEMP/postscript-preview-package.json"
+                  trap 'cp "$RUNNER_TEMP/postscript-preview-package.json" package.json' EXIT
+                  node scripts/prepare-open-vsx-manifest.mjs package.json
+                  vsce package --no-dependencies -o postscript-preview-${{ steps.package-version.outputs.current-version }}-open-vsx.vsix
+            - name: Validate registry packages
+              if: env.OVSX_EXISTS == 'false'
+              run: |
+                  unzip -p postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix extension/package.json |
+                    jq -e '.extensionDependencies | index("mxschmitt.postscript") != null'
+                  unzip -p postscript-preview-${{ steps.package-version.outputs.current-version }}-open-vsx.vsix extension/package.json |
+                    jq -e '(.extensionDependencies // []) | index("mxschmitt.postscript") == null'
+                  if unzip -p postscript-preview-${{ steps.package-version.outputs.current-version }}-open-vsx.vsix extension.vsixmanifest |
+                    grep --fixed-strings --quiet 'mxschmitt.postscript'; then
+                      echo "Open VSX package still declares the unavailable dependency" >&2
+                      exit 1
+                  fi
             - name: Upload a Build Artifact
               if: env.VS_EXISTS == 'false' || env.OVSX_EXISTS == 'false'
               uses: actions/upload-artifact@v7
@@ -136,7 +155,7 @@ jobs:
               if: env.OVSX_EXISTS == 'false'
               env:
                   OVSX_PAT: ${{ secrets.OPEN_VSX_TOKEN }}
-              run: ovsx publish "postscript-preview-${{ steps.package-version.outputs.current-version }}.vsix" --pat "$OVSX_PAT"
+              run: ovsx publish "postscript-preview-${{ steps.package-version.outputs.current-version }}-open-vsx.vsix" --pat "$OVSX_PAT"
             - name: Publish to Visual Studio Marketplace
               if: env.VS_EXISTS == 'false'
               env:
